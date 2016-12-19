@@ -8,10 +8,10 @@
   <body id="" onload="">
     <!-- Styles -->
     <style>
-    #chartdiv {
+    .chart {
       width: 100%;
-      height: 500px;
-    }							
+      height: 300px;
+    }													
     </style>
 
     <!-- Resources -->
@@ -20,107 +20,52 @@
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="./cedar-amcharts.js"></script>
 
 <!-- Chart code -->
 <script>
-    var service="https://servicesqa.arcgis.com/97KLIFOSt5CxbiRI/arcgis/rest/services/Crashes_in_the_District_of_Columbia/FeatureServer/0"
-    var query = {
-      "where": "PEDESTRIANSINVOLVED IS NOT NULL",
-      "outFields": "*",
-      "orderByFields": "EXTRACT(MONTH from REPORTDATE)",
-      "groupByFieldsForStatistics": "EXTRACT(MONTH from REPORTDATE)",
-      "outStatistics": "[{'statisticType':'sum','onStatisticField': 'MAJORINJURIES','outStatisticFieldName': 'MAJORINJURIES'},{'statisticType':'sum','onStatisticField': 'MINORINJURIES','outStatisticFieldName': 'MINORINJURIES'}]",
-      "f":"json"
-    }
-
-function getAsUriParameters(data) {
-   var url = '';
-   for (var prop in data) {
-      url += encodeURIComponent(prop) + '=' + 
-          encodeURIComponent(data[prop]) + '&';
-   }
-   return url.substring(0, url.length - 1)
-}
-
-
-var url = service + "/query?" + getAsUriParameters(query);
-
-var chartData1 = [];
-
-fetch(url)
-.then(function(response) {
-  return response.json().then(function(json) { buildChart(json)});
-})
-.then(function(myBlob) {
-  var objectURL = URL.createObjectURL(myBlob);
-  myImage.src = objectURL;
-});
- 
-function buildChart(json) {
-  var features = json.features;
-  for(var i=0; i < features.length; i++) {
-    chartData1.push(features[i].attributes);
+    var config1 = {
+      "type": "bar",
+      "url": "https://servicesqa.arcgis.com/97KLIFOSt5CxbiRI/arcgis/rest/services/Crashes_in_the_District_of_Columbia/FeatureServer/0",
+    "query": {
+        "orderByFields": "EXTRACT(MONTH from REPORTDATE)",
+        "groupByFieldsForStatistics": "EXTRACT(MONTH from REPORTDATE)",
+        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'MAJORINJURIES','outStatisticFieldName': 'MAJORINJURIES'},{'statisticType':'sum','onStatisticField': 'MINORINJURIES','outStatisticFieldName': 'MINORINJURIES'}]"
+    },
+    "mappings":{
+      "category": "EXPR_1",
+      "series": [
+        { "field": "MINORINJURIES", "label": "Minor Injuries"},
+        { "field": "MAJORINJURIES", "label": "Major Injuries"}        
+      ]
   }
-  console.log(chartData1)
-  var chart = AmCharts.makeChart( "chartdiv", {
-    "type": "serial",
-    "theme": "dark",
-    "dataProvider": chartData1,
-    "legend": {
-           "horizontalGap": 10,
-           "maxColumns": 1,
-           "position": "right",
-   		"useGraphSettings": true,
-   		"markerSize": 10
-       },    
-    "valueAxes": [ {
-      "gridColor": "#FFFFFF",
-      "gridAlpha": 0.2,
-      "dashLength": 0
-    } ],
-    "gridAboveGraphs": true,
-    "startDuration": 0.3,
-    "startEffect": "easeInSine",
-    "graphs": [ {
-      "title": "MINORINJURIES",
-      "balloonText": "[[EXPR_1]]: <b>[[MINORINJURIES]]</b>",
-      "labelText": "[[MINORINJURIES]]",
-      "fillAlphas": 0.8,
-      "lineAlpha": 0.2,
-      "type": "column",
-      "color": "#000000",
-      "valueField": "MINORINJURIES"
-    } ,{
-      "title": "MAJORINJURIES",
-      "balloonText": "[[EXPR_1]]: <b>[[MAJORINJURIES]]</b>",
-      "labelText": "[[MAJORINJURIES]]",
-      "fillAlphas": 0.8,
-      "lineAlpha": 0.2,
-      "type": "column",
-      "color": "#000000",
-      "valueField": "MAJORINJURIES"
-    } ],
-    "chartCursor": {
-      "categoryBalloonEnabled": false,
-      "cursorAlpha": 0,
-      "zoomable": false
-    },
-    "categoryField": "EXPR_1",
-    "categoryAxis": {
-      "gridPosition": "start",
-      "gridAlpha": 0,
-      "tickPosition": "start",
-      "tickLength": 20
-    },
-    "export": {
-      "enabled": true
-    }
-
-  } );
 }
+
+showChart("chartdiv1", config1);
+
+var config2 = {
+      "type": "bar",
+      "url": "https://servicesqa.arcgis.com/97KLIFOSt5CxbiRI/arcgis/rest/services/Crashes_in_the_District_of_Columbia/FeatureServer/0",
+    "query": {
+        "orderByFields": "EXTRACT(MONTH from REPORTDATE)",
+        "groupByFieldsForStatistics": "EXTRACT(MONTH from REPORTDATE)",
+        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'PEDESTRIANSINVOLVED','outStatisticFieldName': 'PEDESTRIANSINVOLVED'},{'statisticType':'sum','onStatisticField': 'CYCLISTSINVOLVED','outStatisticFieldName': 'CYCLISTSINVOLVED'}]"
+    },
+    "mappings":{
+      "category": "EXPR_1",
+      "series": [
+        { "field": "PEDESTRIANSINVOLVED", "label": "Pedestrians"},
+        { "field": "CYCLISTSINVOLVED", "label": "Cyclists"}        
+      ]
+  }
+}
+showChart("chartdiv2", config2);
+
+
 </script>
 
 <!-- HTML -->
-<div id="chartdiv"></div>	
+<div id="chartdiv1" class="chart"></div>	
+<div id="chartdiv2" class="chart"></div>	
   </body>
 </html>
