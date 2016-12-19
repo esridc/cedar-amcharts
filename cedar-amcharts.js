@@ -1,6 +1,12 @@
 function getLayerQueryUrl(layer, query){
   if(query === null || query === undefined) {
     query = {}
+  } 
+  
+  if(query.outStatistics !== undefined 
+      && query.outStatistics !== null 
+      && typeof query.outStatistics != "string") {
+    query.outStatistics = JSON.stringify(query.outStatistics);
   }
   
   query.f = "json";
@@ -10,7 +16,6 @@ function getLayerQueryUrl(layer, query){
   if(query.outFields === null || query.outFields === undefined) {
     query.outFields = "*";
   }
-  
   return url = layer + "/query?" + getAsUriParameters(query);
 }
 function getAsUriParameters(data) {
