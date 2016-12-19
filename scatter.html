@@ -16,7 +16,7 @@
 
     <!-- Resources -->
     <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
-    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/xy.js"></script>
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
@@ -25,22 +25,13 @@
 <!-- Chart code -->
 <script>
     var config1 = {
-      "type": "bar", 
+      "type": "scatter", 
       "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-          "query": {
-            "orderByFields": "Number_of_SUM DESC",
-            "groupByFieldsForStatistics": "Type",
-            "outStatistics": [{
-              "statisticType": "sum",
-              "onStatisticField": "Number_of",
-              "outStatisticFieldName": "Number_of_SUM"
-            }]
-          },
+          "query": {},
     "mappings":{
-      "category": "Type",
       "series": [
-        { "field": "Number_of_SUM", "label": "Number of Students"}      
-      ]
+          { "x": "Number_of", "y": "F_of_teach", "label": "Name"}      
+        ]
   }
 }
 
@@ -51,26 +42,16 @@ showChart("chartdiv1", config1);
 <!-- HTML -->
 <a href="/">&lt; Back Home</a>
 <div id="chartdiv1" class="chart"></div>	
+
 <pre>
   <code>
-    var config1 = {
-      "type": "bar", 
-      "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-          "query": {
-            "orderByFields": "Number_of_SUM DESC",
-            "groupByFieldsForStatistics": "Type",
-            "outStatistics": [{
-              "statisticType": "sum",
-              "onStatisticField": "Number_of",
-              "outStatisticFieldName": "Number_of_SUM"
-            }]
-          },
-    "mappings":{
-      "category": "Type",
-      "series": [
-        { "field": "Number_of_SUM", "label": "Number of Students"}      
-      ]
-  }
+var config1 = {
+  "type": "scatter", 
+  "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+      "query": {},
+"mappings":{
+  "series": [
+      { "x": "Number_of", "y": "F_of_teach", "label": "Name"}]}
 }
 
 showChart("chartdiv1", config1);    
