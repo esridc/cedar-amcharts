@@ -1,14 +1,14 @@
 function getLayerQueryUrl(layer, query){
   if(query === null || query === undefined) {
     query = {}
-  } 
-  
-  if(query.outStatistics !== undefined 
-    && query.outStatistics !== null 
+  }
+
+  if(query.outStatistics !== undefined
+    && query.outStatistics !== null
     && typeof query.outStatistics != "string") {
       query.outStatistics = JSON.stringify(query.outStatistics);
     }
-  
+
     query.f = "json";
     if(query.where === null || query.where === undefined ) {
       query.where = "1=1";
@@ -21,7 +21,7 @@ function getLayerQueryUrl(layer, query){
   function getAsUriParameters(data) {
     var url = '';
     for (var prop in data) {
-      url += encodeURIComponent(prop) + '=' + 
+      url += encodeURIComponent(prop) + '=' +
       encodeURIComponent(data[prop]) + '&';
     }
     return url.substring(0, url.length - 1)
@@ -35,7 +35,26 @@ function getLayerQueryUrl(layer, query){
     })
   }
 
-  function getData(url) { 
+  function mergeRecursive (obj1, obj2) {
+    for (var p in obj2) {
+      if (obj2.hasOwnProperty(p)) {
+        try {
+          // Property in destination object set; update its value.
+          if (obj2[p].constructor === Object || obj2[p].constructor === Array) {
+            obj1[p] = mergeRecursive(obj1[p], obj2[p]);
+          } else {
+            obj1[p] = obj2[p];
+          }
+        } catch (e) {
+          // Property in destination object not set; create it and set its value
+          obj1[p] = obj2[p];
+        }
+      }
+    }
+    return obj1;
+  }
+
+  function getData(url) {
     return fetch(url)
     .then(function(response) {
       return response.json();
@@ -43,6 +62,7 @@ function getLayerQueryUrl(layer, query){
       console.error("Error fetching data", reason);
     })
   }
+
   function flattenFeatures(json) {
     var features = json.features;
     var data = []
@@ -51,46 +71,57 @@ function getLayerQueryUrl(layer, query){
     }
     return data;
   }
+
   function drawChart(elementId, config, data) {
     // FIXME Clone the spec
     var spec = JSON.parse(JSON.stringify(specs[config.type]));
+
+    // set the data
     spec.dataProvider = data;
+
+    // apply overrides
+    if (config.overrides) {
+      mergeRecursive(spec, config.overrides);
+    }
+
+    // apply the mappings
     if(config.mappings.value !== undefined) {
-      spec.valueField = config.mappings.value.field;      
+      spec.valueField = config.mappings.value.field;
     }
     if(config.mappings.title !== undefined) {
       spec.titleField = config.mappings.title.field;
     }
-    
     spec.categoryField = config.mappings.category;
+
+    // apply the series
     if(config.mappings.series !== undefined ){
       // Get the example graph spec
       var graphSpec = spec.graphs.pop();
       for(var i=0; i < config.mappings.series.length; i++) {
         var series = config.mappings.series[i];
         var graph = JSON.parse(JSON.stringify(graphSpec));
-        
+
         graph.title = series.label;
         graph.balloonText = "[[" + spec.categoryField + "]]: <b>[[" + series.field + "]]</b>";
         graph.labelText = "[[" + series.field + "]]";
         graph.valueField = series.field;
-        
+
         // Only clone scatterplots
         if(graph.xField !== undefined) {
           graph.xField = series.x;
-          graph.yField = series.y;          
+          graph.yField = series.y;
 
           graph.balloonText = "[[" + series.label + "]]: <b>[[" + series.x + "]], [[" + series.y + "]]</b>";
           graph.labelText = "";
-          
+
         }
-        
+
         spec.graphs.push(graph)
       }
     }
 
       console.log("Spec", spec)
-      var chart = AmCharts.makeChart( elementId, spec );  
+      var chart = AmCharts.makeChart( elementId, spec );
     }
 
     var specs = {
@@ -99,9 +130,9 @@ function getLayerQueryUrl(layer, query){
         "graphs": [{
           "fillAlphas": 0.2,
           "lineAlpha": 0.8,
-          "type": "column",           
-          "color": "#000000"          
-        }],    
+          "type": "column",
+          "color": "#000000"
+        }],
         "theme": "dark",
         "legend": {
           "horizontalGap": 10,
@@ -109,7 +140,7 @@ function getLayerQueryUrl(layer, query){
           "position": "right",
           "useGraphSettings": true,
           "markerSize": 10
-        },    
+        },
         "valueAxes": [ {
           "gridColor": "#FFFFFF",
           "gridAlpha": 0.2,
@@ -162,7 +193,7 @@ function getLayerQueryUrl(layer, query){
           "bulletAlpha": 0.8,
           "color": "#000000",
           "xField": null,
-          "yField": null,                
+          "yField": null,
         }]
       }
     }
