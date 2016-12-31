@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>AmCharts</title>
-    
+
   </head>
   <body id="" onload="">
     <!-- Styles -->
@@ -11,7 +11,7 @@
     .chart {
       width: 100%;
       height: 300px;
-    }													
+    }
     </style>
 
     <!-- Resources -->
@@ -24,21 +24,28 @@
 
 <!-- Chart code -->
 <script>
-    var config1 = {
-      "type": "pie", 
-      "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-          "query": {
-            "orderByFields": "Number_of_SUM DESC",
-            "groupByFieldsForStatistics": "Type",
-            "outStatistics": [{
-              "statisticType": "sum",
-              "onStatisticField": "Number_of",
-              "outStatisticFieldName": "Number_of_SUM"
-            }]
-          },
-    "mappings":{
-      "value": { "field": "Number_of_SUM", "label": "Number of Students"} ,
-      "title": { "field": "Type", "label": "Type"}     
+var config1 = {
+  "type": "pie",
+  "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+  "query": {
+    "orderByFields": "Number_of_SUM DESC",
+    "groupByFieldsForStatistics": "Type",
+    "outStatistics": [
+      {
+        "statisticType": "sum",
+        "onStatisticField": "Number_of",
+        "outStatisticFieldName": "Number_of_SUM"
+      }
+    ]
+  },
+  "mappings": {
+    "category": "Type",
+    "series": [
+      {
+        "field": "Number_of_SUM",
+        "label": "Number of Students"
+      }
+    ]
   }
 }
 
@@ -47,30 +54,36 @@ showChart("chartdiv1", config1);
 </script>
 
 <!-- HTML -->
-<a href="/">&lt; Back Home</a>
-<div id="chartdiv1" class="chart"></div>	
+<a href="./">&lt; Back Home</a>
+<div id="chartdiv1" class="chart"></div>
 
 <pre>
   <code>
-    var config1 = {
-      "type": "pie", 
-      "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-          "query": {
-            "orderByFields": "Number_of_SUM DESC",
-            "groupByFieldsForStatistics": "Type",
-            "outStatistics": [{
-              "statisticType": "sum",
-              "onStatisticField": "Number_of",
-              "outStatisticFieldName": "Number_of_SUM"
-            }]
-          },
-    "mappings":{
-      "value": { "field": "Number_of_SUM", "label": "Number of Students"} ,
-      "title": { "field": "Type", "label": "Type"}     
+var config1 = {
+  "type": "pie",
+  "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+  "query": {
+    "orderByFields": "Number_of_SUM DESC",
+    "groupByFieldsForStatistics": "Type",
+    "outStatistics": [
+      {
+        "statisticType": "sum",
+        "onStatisticField": "Number_of",
+        "outStatisticFieldName": "Number_of_SUM"
+      }
+    ]
+  },
+  "mappings": {
+    "category": "Type",
+    "series": [
+      {
+        "field": "Number_of_SUM",
+        "label": "Number of Students"
+      }
+    ]
   }
 }
-
-showChart("chartdiv1", config1);    
+showChart("chartdiv1", config1);
   </code>
 </pre>
   </body>

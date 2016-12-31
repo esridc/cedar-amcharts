@@ -28,9 +28,28 @@ function getLayerQueryUrl(layer, query){
   }
 
   function showChart(elementId, config) {
-    var url = getLayerQueryUrl(config.url,config.query);
-    getData(url).then(function(json) {
-      var data = flattenFeatures(json);
+    var requests = [];
+    var join_keys = [];
+
+
+    if(config.series === undefined || config.series === null) {
+        config.series = [config]
+    }
+
+    // For each series, query layer for data
+    for(s=0; s<config.series.length; s++) {
+      var series = config.series[s]
+      if(series.mappings.category !== undefined && series.mappings.category !== null) {
+        join_keys.push(series.mappings.category); // foreign key lookup
+      }
+      var url = getLayerQueryUrl(series.url,series.query);
+      requests.push(getData(url))
+    }
+
+    // Join the features into a single layer
+    Promise.all(requests).then(function(datasets) {
+      console.log("Promise fulfilled", datasets)
+      var data = flattenFeatures(join_keys, datasets);
       drawChart(elementId, config, data);
     })
   }
@@ -43,57 +62,105 @@ function getLayerQueryUrl(layer, query){
       console.error("Error fetching data", reason);
     })
   }
-  function flattenFeatures(json) {
-    var features = json.features;
-    var data = []
-    for(var i=0; i < features.length; i++) {
-      data.push(features[i].attributes);
+
+  function buildIndex(join_keys, datasets) {
+    var index = {}
+    for(var d=0; d<datasets.length; d++) {
+      for(var f=0; f < datasets[d].features.length; f++) {
+        var idx = datasets[d].features[f].attributes[join_keys[d]];
+        if(index[idx] === undefined) {
+          index[idx] = []
+        }
+        index[idx].push(datasets[d].features[f].attributes)
+      }
     }
-    return data;
+    return index;
+  }
+  // Join multiple layers by common keys
+  function flattenFeatures(join_keys, datasets) {
+    console.log("Join Keys", join_keys)
+    console.log("datasets", datasets)
+    var features = []
+
+    // No Join, just merge
+    if(join_keys.length == 0) {
+      for(var d=0;d<datasets.length; d++) {
+        for(var f=0; f<datasets[d].features.length; f++) {
+
+          features.push(datasets[d].features[f].attributes);
+        }
+      }
+      return features;
+    }
+
+    // Instead, join
+    var index = buildIndex(join_keys, datasets)
+    var key = join_keys[0]; // TODO: support different `category` keys
+    var keys = Object.keys(index)
+    for(var k=0;k<keys.length; k++) {
+      var idx_arr = index[keys[k]];
+      var feature = {"categoryField": idx_arr[0][key]}
+      for(var i=0; i<idx_arr.length; i++) {
+        var attr_keys = Object.keys(idx_arr[i])
+        for(var ak=0; ak<attr_keys.length; ak++) {
+          var attr = attr_keys[ak] + "_" + i;
+          feature[attr] = idx_arr[i][attr_keys[ak]]
+        }
+
+      }
+      features.push(feature)
+    }
+
+
+    return features;
   }
   function drawChart(elementId, config, data) {
     // FIXME Clone the spec
-    console.log("drawChart")
+    console.log("drawChart", data)
     var spec = JSON.parse(JSON.stringify(specs[config.type]));
     spec.dataProvider = data;
-    // spec.dataSets = [{"dataProvider": data, "title": "first data set",}];
+    spec.categoryField = "categoryField";
 
-    if(config.mappings.value !== undefined) {
-      spec.valueField = config.mappings.value.field;
-    }
-    if(config.mappings.title !== undefined) {
-      spec.titleField = config.mappings.title.field;
-    }
-
-    spec.categoryField = config.mappings.category;
-    if(config.mappings.series !== undefined ){
+    if(config.series !== undefined ){
       // Get the example graph spec
       var graphSpec = spec.graphs.pop();
-      for(var i=0; i < config.mappings.series.length; i++) {
-        var series = config.mappings.series[i];
-        var graph = JSON.parse(JSON.stringify(graphSpec));
+      for(var s=0; s < config.series.length; s++) {
+        for(var i=0; i < config.series[s].mappings.series.length; i++) {
+          var series = config.series[s].mappings.series[i];
+          var graph = JSON.parse(JSON.stringify(graphSpec));
 
-        graph.title = series.label;
-        graph.balloonText = "[[" + spec.categoryField + "]]: <b>[[" + series.field + "]]</b>";
-        graph.labelText = "[[" + series.field + "]]";
-        graph.valueField = series.field;
+          graph.title = series.label;
+          graph.valueField = series.field + "_" + s;
+          graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
+          graph.labelText = "[[" + series.field + "]]";
 
-        // Only clone scatterplots
-        if(graphSpec.xField !== undefined && series.x !== undefined && series.y !== undefined) {
-          graph.xField = series.x;
-          graph.yField = series.y;
+          spec.titleField = "categoryField";
+          spec.valueField = graph.valueField
 
-          graph.balloonText = "[[" + series.label + "]]: <b>[[" + series.x + "]], [[" + series.y + "]]</b>";
-          graph.labelText = "";
+          // group vs. stack
+          var group = config.series[s].mappings.group
+          if(group !== undefined && group) {
+            graph.newStack = true
+          }
 
-        }
-        console.log("Value", [graph.valueField, series.value])
-        if(graphSpec.valueField !== undefined && series.value !== undefined) {
-          graph.valueField = series.value;
-          graph.balloonText += "<br/> [["+ graph.valueField +"]]";
-        }
-        spec.graphs.push(graph)
-      }
+          // Only clone scatterplots
+          if(graphSpec.xField !== undefined && series.x !== undefined && series.y !== undefined) {
+            graph.xField = series.x;
+            graph.yField = series.y;
+
+            graph.balloonText = series.name + " [[" + series.label + "]]: <b>[[" + series.x + "]], [[" + series.y + "]]</b>";
+            graph.labelText = "";
+            console.log("X/Y Fields", [graph.xField, graph.yField])
+
+          }
+          if(graphSpec.valueField !== undefined && series.value !== undefined) {
+            console.log("Value", [graph.valueField, series.value])
+            graph.valueField = series.value;
+            graph.balloonText += "<br/> [["+ graph.valueField +"]]";
+          }
+          spec.graphs.push(graph)
+        } // for(mappings)
+      } // for(series)
     }
 
       console.log("Spec", spec)
@@ -145,11 +212,16 @@ function getLayerQueryUrl(layer, query){
         "type": "pie",
         "innerRadius": "30%",
         "startDuration": 0,
-        "graphs": [],
+        "graphs": [{}],
         "groupPercent": 5,
         "balloon":{
            "fixedPosition":true
           },
+        "legend":{
+         	"position":"right",
+          "marginRight":100,
+          "autoMargins":false
+        },
       },
       "scatter": {
         "type": "xy",

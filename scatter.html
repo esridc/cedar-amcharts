@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>AmCharts</title>
-    
+
   </head>
   <body id="" onload="">
     <!-- Styles -->
@@ -11,7 +11,7 @@
     .chart {
       width: 100%;
       height: 300px;
-    }													
+    }
     </style>
 
     <!-- Resources -->
@@ -24,15 +24,41 @@
 
 <!-- Chart code -->
 <script>
-    var config1 = {
-      "type": "scatter", 
-      "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-          "query": {},
-    "mappings":{
+var config1 = {
+  "type": "scatter",
+  "series": [ {
+    "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+    "query": {},
+    "mappings": {
       "series": [
-          { "x": "Number_of", "y": "F_of_teach", "label": "Name"}      
-        ]
-  }
+        {
+          "name": "Teachers",
+          "x": "Number_of",
+          "y": "F_of_teach",
+          "label": "Name"
+        },
+        {
+          "name": "Free Lunches",
+          "x": "Number_of",
+          "y": "Free_Lunch",
+          "label": "Name"
+        }
+      ]
+    }
+  },{
+    "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+    "query": {},
+    "mappings": {
+      "series": [
+        {
+          "name": "Limited En?",
+          "x": "Number_of",
+          "y": "Limited_En",
+          "label": "Name"
+        }
+      ]
+    }
+  }]
 }
 
 showChart("chartdiv1", config1);
@@ -40,21 +66,49 @@ showChart("chartdiv1", config1);
 </script>
 
 <!-- HTML -->
-<a href="/">&lt; Back Home</a>
-<div id="chartdiv1" class="chart"></div>	
+<a href="./">&lt; Back Home</a>
+<div id="chartdiv1" class="chart"></div>
 
 <pre>
   <code>
-var config1 = {
-  "type": "scatter", 
-  "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-      "query": {},
-"mappings":{
-  "series": [
-      { "x": "Number_of", "y": "F_of_teach", "label": "Name"}]}
-}
+    var config1 = {
+      "type": "scatter",
+      "series": [ {
+        "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+        "query": {},
+        "mappings": {
+          "series": [
+            {
+              "name": "Teachers",
+              "x": "Number_of",
+              "y": "F_of_teach",
+              "label": "Name"
+            },
+            {
+              "name": "Free Lunches",
+              "x": "Number_of",
+              "y": "Free_Lunch",
+              "label": "Name"
+            }
+          ]
+        }
+      },{
+        "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+        "query": {},
+        "mappings": {
+          "series": [
+            {
+              "name": "Limited En?",
+              "x": "Number_of",
+              "y": "Limited_En",
+              "label": "Name"
+            }
+          ]
+        }
+      }]
+    }
 
-showChart("chartdiv1", config1);    
+showChart("chartdiv1", config1);
   </code>
 </pre>
   </body>

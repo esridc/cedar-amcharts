@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>AmCharts</title>
-    
+
   </head>
   <body id="" onload="">
     <!-- Styles -->
@@ -11,7 +11,7 @@
     .chart {
       width: 100%;
       height: 300px;
-    }													
+    }
     </style>
 
     <!-- Resources -->
@@ -25,7 +25,7 @@
 <!-- Chart code -->
 <a href="/">&lt; Back Home</a>
 <script>
-    var config1 = {
+var config1 = {
       "type": "bar",
       "url": "https://servicesqa.arcgis.com/97KLIFOSt5CxbiRI/arcgis/rest/services/Crashes_in_the_District_of_Columbia/FeatureServer/0",
     "query": {
@@ -37,7 +37,7 @@
       "category": "EXPR_1",
       "series": [
         { "field": "MINORINJURIES", "label": "Minor Injuries"},
-        { "field": "MAJORINJURIES", "label": "Major Injuries"}        
+        { "field": "MAJORINJURIES", "label": "Major Injuries"}
       ]
   }
 }
@@ -54,9 +54,10 @@ var config2 = {
     },
     "mappings":{
       "category": "EXPR_1",
+      "group": true,
       "series": [
         { "field": "PEDESTRIANSINVOLVED", "label": "Pedestrians"},
-        { "field": "CYCLISTSINVOLVED", "label": "Cyclists"}        
+        { "field": "CYCLISTSINVOLVED", "label": "Cyclists"}
       ]
   }
 }
@@ -66,7 +67,47 @@ showChart("chartdiv2", config2);
 </script>
 
 <!-- HTML -->
-<div id="chartdiv1" class="chart"></div>	
-<div id="chartdiv2" class="chart"></div>	
-  </body>
+<div id="chartdiv1" class="chart"></div>
+<div id="chartdiv2" class="chart"></div>
+
+<pre>
+var config1 = {
+      "type": "bar",
+      "url": "https://servicesqa.arcgis.com/97KLIFOSt5CxbiRI/arcgis/rest/services/Crashes_in_the_District_of_Columbia/FeatureServer/0",
+    "query": {
+        "orderByFields": "EXTRACT(MONTH from REPORTDATE)",
+        "groupByFieldsForStatistics": "EXTRACT(MONTH from REPORTDATE)",
+        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'MAJORINJURIES','outStatisticFieldName': 'MAJORINJURIES'},{'statisticType':'sum','onStatisticField': 'MINORINJURIES','outStatisticFieldName': 'MINORINJURIES'}]"
+    },
+    "mappings":{
+      "category": "EXPR_1",
+      "series": [
+        { "field": "MINORINJURIES", "label": "Minor Injuries"},
+        { "field": "MAJORINJURIES", "label": "Major Injuries"}
+      ]
+  }
+}
+
+showChart("chartdiv1", config1);
+
+var config2 = {
+      "type": "bar",
+      "url": "https://servicesqa.arcgis.com/97KLIFOSt5CxbiRI/arcgis/rest/services/Crashes_in_the_District_of_Columbia/FeatureServer/0",
+    "query": {
+        "orderByFields": "EXTRACT(MONTH from REPORTDATE)",
+        "groupByFieldsForStatistics": "EXTRACT(MONTH from REPORTDATE)",
+        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'PEDESTRIANSINVOLVED','outStatisticFieldName': 'PEDESTRIANSINVOLVED'},{'statisticType':'sum','onStatisticField': 'CYCLISTSINVOLVED','outStatisticFieldName': 'CYCLISTSINVOLVED'}]"
+    },
+    "mappings":{
+      "category": "EXPR_1",
+      "group": true,
+      "series": [
+        { "field": "PEDESTRIANSINVOLVED", "label": "Pedestrians"},
+        { "field": "CYCLISTSINVOLVED", "label": "Cyclists"}
+      ]
+  }
+}
+showChart("chartdiv2", config2);
+</pre>
+</body>
 </html>
