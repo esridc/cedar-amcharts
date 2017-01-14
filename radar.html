@@ -41,7 +41,7 @@ for(var p=0; p<time_periods.length; p++) {
     "series": [ ]};
   for(var i=0; i<offense_types.length; i++) {
     var s = {
-      "url": "http://services.arcgis.com/bkrWlSKcjUDFDtgw/ArcGIS/rest/services/DC_Crime_2016/FeatureServer/0",
+      "url": "https://services.arcgis.com/bkrWlSKcjUDFDtgw/ArcGIS/rest/services/DC_Crime_2016/FeatureServer/0",
       "query": {
         "where": "OFFENSE='" + offense_types[i] + "'",
         "groupByFieldsForStatistics": "EXTRACT(" + time_periods[p] + " from REPORTDATETIME)",
