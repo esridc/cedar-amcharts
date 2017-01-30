@@ -54,6 +54,25 @@ function getLayerQueryUrl(layer, query){
     })
   }
 
+  function mergeRecursive (obj1, obj2) {
+    for (var p in obj2) {
+      if (obj2.hasOwnProperty(p)) {
+        try {
+          // Property in destination object set; update its value.
+          if (obj2[p].constructor === Object || obj2[p].constructor === Array) {
+            obj1[p] = mergeRecursive(obj1[p], obj2[p]);
+          } else {
+            obj1[p] = obj2[p];
+          }
+        } catch (e) {
+          // Property in destination object not set; create it and set its value
+          obj1[p] = obj2[p];
+        }
+      }
+    }
+    return obj1;
+  }
+
   function getData(url) {
     return fetch(url)
     .then(function(response) {
@@ -118,9 +137,17 @@ function getLayerQueryUrl(layer, query){
     // FIXME Clone the spec
     console.log("drawChart", data)
     var spec = JSON.parse(JSON.stringify(specs[config.type]));
+
+    // set the data and defaults
     spec.dataProvider = data;
     spec.categoryField = "categoryField";
 
+    // apply overrides
+    if (config.overrides) {
+      mergeRecursive(spec, config.overrides);
+    }
+
+    // apply the mappings
     if(config.datasets !== undefined ){
       // Get the example graph spec
       var graphSpec = spec.graphs.pop();
