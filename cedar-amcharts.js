@@ -32,17 +32,17 @@ function getLayerQueryUrl(layer, query){
     var join_keys = [];
 
 
-    if(config.series === undefined || config.series === null) {
-        config.series = [config]
+    if(config.datasets === undefined || config.datasets === null) {
+        config.datasets = [config]
     }
 
     // For each series, query layer for data
-    for(s=0; s<config.series.length; s++) {
-      var series = config.series[s]
-      if(series.mappings.category !== undefined && series.mappings.category !== null) {
-        join_keys.push(series.mappings.category); // foreign key lookup
+    for(s=0; s<config.datasets.length; s++) {
+      var dataset = config.datasets[s]
+      if(dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
+        join_keys.push(dataset.mappings.category); // foreign key lookup
       }
-      var url = getLayerQueryUrl(series.url,series.query);
+      var url = getLayerQueryUrl(dataset.url,dataset.query);
       requests.push(getData(url))
     }
 
@@ -121,12 +121,12 @@ function getLayerQueryUrl(layer, query){
     spec.dataProvider = data;
     spec.categoryField = "categoryField";
 
-    if(config.series !== undefined ){
+    if(config.datasets !== undefined ){
       // Get the example graph spec
       var graphSpec = spec.graphs.pop();
-      for(var s=0; s < config.series.length; s++) {
-        for(var i=0; i < config.series[s].mappings.series.length; i++) {
-          var series = config.series[s].mappings.series[i];
+      for(var s=0; s < config.datasets.length; s++) {
+        for(var i=0; i < config.datasets[s].mappings.series.length; i++) {
+          var series = config.datasets[s].mappings.series[i];
           var graph = JSON.parse(JSON.stringify(graphSpec));
 
           graph.title = series.label;
@@ -138,7 +138,7 @@ function getLayerQueryUrl(layer, query){
           spec.valueField = graph.valueField
 
           // group vs. stack
-          var group = config.series[s].mappings.group
+          var group = config.datasets[s].mappings.group
           if(group !== undefined && group) {
             graph.newStack = true
           }
