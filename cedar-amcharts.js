@@ -30,6 +30,7 @@ function getLayerQueryUrl(layer, query){
   function showChart(elementId, config) {
     var requests = [];
     var join_keys = [];
+    var transformFunctions = [];
 
 
     if(config.datasets === undefined || config.datasets === null) {
@@ -42,14 +43,15 @@ function getLayerQueryUrl(layer, query){
       if(dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
         join_keys.push(dataset.mappings.category); // foreign key lookup
       }
+      transformFunctions.push(dataset.featureTransform);
       var url = getLayerQueryUrl(dataset.url,dataset.query);
       requests.push(getData(url))
     }
 
     // Join the features into a single layer
-    Promise.all(requests).then(function(datasets) {
-      console.log("Promise fulfilled", datasets)
-      var data = flattenFeatures(join_keys, datasets);
+    Promise.all(requests).then(function(responses) {
+      console.log("Promise fulfilled", responses);
+      var data = flattenFeatures(join_keys, responses, transformFunctions);
       drawChart(elementId, config, data);
     })
   }
@@ -82,38 +84,41 @@ function getLayerQueryUrl(layer, query){
     })
   }
 
-  function buildIndex(join_keys, datasets) {
+  function buildIndex(join_keys, featureSets, transformFunctions) {
     var index = {}
-    for(var d=0; d<datasets.length; d++) {
-      for(var f=0; f < datasets[d].features.length; f++) {
-        var idx = datasets[d].features[f].attributes[join_keys[d]];
+    for(var d=0; d<featureSets.length; d++) {
+      var transformFunction = getTransformFunction(transformFunctions[d]);
+      for(var f=0; f < featureSets[d].features.length; f++) {
+        var idx = featureSets[d].features[f].attributes[join_keys[d]];
         if(index[idx] === undefined) {
           index[idx] = []
         }
-        index[idx].push(datasets[d].features[f].attributes)
+        index[idx].push(transformFunction(featureSets[d].features[f]))
       }
     }
     return index;
   }
   // Join multiple layers by common keys
-  function flattenFeatures(join_keys, datasets) {
+  function flattenFeatures(join_keys, featureSets, transformFunctions) {
     console.log("Join Keys", join_keys)
-    console.log("datasets", datasets)
-    var features = []
+    console.log("featureSets", featureSets)
+    var features = [];
 
     // No Join, just merge
     if(join_keys.length == 0) {
-      for(var d=0;d<datasets.length; d++) {
-        for(var f=0; f<datasets[d].features.length; f++) {
-
-          features.push(datasets[d].features[f].attributes);
+      for(var d=0;d<featureSets.length; d++) {
+        var featureSet = featureSets[d];
+        var transformFunction = getTransformFunction(transformFunctions[d]);
+        console.log('transformFunction', transformFunction);
+        for(var f=0; f<featureSet.features.length; f++) {
+          features.push(transformFunction(featureSet.features[f]));
         }
       }
       return features;
     }
 
     // Instead, join
-    var index = buildIndex(join_keys, datasets)
+    var index = buildIndex(join_keys, featureSets, transformFunctions)
     var key = join_keys[0]; // TODO: support different `category` keys
     var keys = Object.keys(index)
     for(var k=0;k<keys.length; k++) {
@@ -133,6 +138,16 @@ function getLayerQueryUrl(layer, query){
 
     return features;
   }
+
+  // get a user specified function to transform each feature,
+  // or just use the default (returns feature attributes)
+  function getTransformFunction (featureTransform) {
+    var defaultTransformFunction = function (feature) {
+      return feature.attributes;
+    };
+    return typeof featureTransform === 'function' ? featureTransform : defaultTransformFunction;
+  }
+
   function drawChart(elementId, config, data) {
     // FIXME Clone the spec
     console.log("drawChart", data)
@@ -141,11 +156,6 @@ function getLayerQueryUrl(layer, query){
     // set the data and defaults
     spec.dataProvider = data;
     spec.categoryField = "categoryField";
-
-    // apply overrides
-    if (config.overrides) {
-      mergeRecursive(spec, config.overrides);
-    }
 
     // apply the mappings
     if(config.datasets !== undefined ){
@@ -190,9 +200,14 @@ function getLayerQueryUrl(layer, query){
       } // for(series)
     }
 
-      console.log("Spec", spec)
-      var chart = AmCharts.makeChart( elementId, spec );
+    // apply overrides
+    if (config.overrides) {
+      mergeRecursive(spec, config.overrides);
     }
+
+    console.log("Spec", spec)
+    var chart = AmCharts.makeChart( elementId, spec );
+  }
 
     var specs = {
       "bar": {
@@ -311,5 +326,80 @@ function getLayerQueryUrl(layer, query){
           "xField": null,
           "yField": null,
         }]
+      },
+      "timeline": {
+        "type": "serial",
+        "theme": "light",
+        "marginRight": 40,
+        "marginLeft": 40,
+        "autoMarginOffset": 20,
+        "mouseWheelZoomEnabled":true,
+        "dataDateFormat": "YYYY-MM-DD",
+        "valueAxes": [{
+            "id": "v1",
+            "axisAlpha": 0,
+            "position": "left",
+            "ignoreAxisWidth":true
+        }],
+        "balloon": {
+            "borderThickness": 1,
+            "shadowAlpha": 0
+        },
+        "graphs": [{
+            "id": "g1",
+            "balloon":{
+              "drop":true,
+              "adjustBorderColor":false,
+              "color":"#ffffff"
+            },
+            "bullet": "round",
+            "bulletBorderAlpha": 1,
+            "bulletColor": "#FFFFFF",
+            "bulletSize": 5,
+            "hideBulletsCount": 50,
+            "lineThickness": 2,
+            "title": "red line",
+            "useLineColorForBulletBorder": true,
+            "valueField": null
+        }],
+        "chartScrollbar": {
+            "graph": "g1",
+            "oppositeAxis":false,
+            "offset":30,
+            "scrollbarHeight": 80,
+            "backgroundAlpha": 0,
+            "selectedBackgroundAlpha": 0.1,
+            "selectedBackgroundColor": "#888888",
+            "graphFillAlpha": 0,
+            "graphLineAlpha": 0.5,
+            "selectedGraphFillAlpha": 0,
+            "selectedGraphLineAlpha": 1,
+            "autoGridCount":true,
+            "color":"#AAAAAA"
+        },
+        "chartCursor": {
+            "pan": true,
+            "valueLineEnabled": true,
+            "valueLineBalloonEnabled": true,
+            "cursorAlpha":1,
+            "cursorColor":"#258cbb",
+            "limitToGraph":"g1",
+            "valueLineAlpha":0.2,
+            "valueZoomable":true
+        },
+        "valueScrollbar":{
+          "oppositeAxis":false,
+          "offset":50,
+          "scrollbarHeight":10
+        },
+        "categoryField": "date",
+        "categoryAxis": {
+            "parseDates": true,
+            "dashLength": 1,
+            "minorGridEnabled": true
+        },
+        "export": {
+            "enabled": true
+        }
       }
     }
