@@ -1,4 +1,9 @@
-function getLayerQueryUrl(layer, query){
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function getLayerQueryUrl(layer, q){
+  var query = clone(q);
   if(query === null || query === undefined) {
     query = {}
   }
@@ -16,7 +21,7 @@ function getLayerQueryUrl(layer, query){
     if(query.outFields === null || query.outFields === undefined) {
       query.outFields = "*";
     }
-    return url = layer + "/query?" + getAsUriParameters(query);
+    return layer + "/query?" + getAsUriParameters(query);
   }
   function getAsUriParameters(data) {
     var url = '';
@@ -27,11 +32,11 @@ function getLayerQueryUrl(layer, query){
     return url.substring(0, url.length - 1)
   }
 
-  function showChart(elementId, config) {
+  function showChart(elementId, c) {
     var requests = [];
     var join_keys = [];
     var transformFunctions = [];
-
+    var config = clone(c);
 
     if(config.datasets === undefined || config.datasets === null) {
         config.datasets = [config]
@@ -41,7 +46,7 @@ function getLayerQueryUrl(layer, query){
     for(s=0; s<config.datasets.length; s++) {
       var dataset = config.datasets[s]
       if(dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
-        join_keys.push(dataset.mappings.category); // foreign key lookup
+        join_keys.push(dataset.mappings.category.field); // foreign key lookup
       }
       transformFunctions.push(dataset.featureTransform);
       var url = getLayerQueryUrl(dataset.url,dataset.query);
@@ -151,7 +156,7 @@ function getLayerQueryUrl(layer, query){
   function drawChart(elementId, config, data) {
     // FIXME Clone the spec
     console.log("drawChart", data)
-    var spec = JSON.parse(JSON.stringify(specs[config.type]));
+    var spec = clone(specs[config.type]);
 
     // set the data and defaults
     spec.dataProvider = data;

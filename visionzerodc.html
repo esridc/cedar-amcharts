@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>AmCharts</title>
+
+  </head>
+  <body id="" onload="">
+    <!-- Styles -->
+    <style>
+    .chart {
+      width: 100%;
+      height: 300px;
+    }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/xy.js"></script>
+    <script src="https://www.amcharts.com/lib/3/radar.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="./cedar-amcharts.js"></script>
+
+<!-- Chart code -->
+<script>
+var url = "https://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/DC_Crashes/FeatureServer/0"
+var config1 = {
+  "type": "bar",
+  "datasets": [ {
+    "url": url,
+    "query": {
+      "orderByFields": "FIRSTHARMFULEVENTSPECIFICS_COUNT DESC",
+      "groupByFieldsForStatistics": "FIRSTHARMFULEVENTSPECIFICS",
+      "outStatistics": [
+        {
+          "statisticType": "count",
+          "onStatisticField": "FIRSTHARMFULEVENTSPECIFICS",
+          "outStatisticFieldName": "FIRSTHARMFULEVENTSPECIFICS_COUNT"
+        }
+      ]
+    },
+    "mappings": {
+      "category": {"field": "FIRSTHARMFULEVENTSPECIFICS", "label": "Event Type"},
+      "series": [
+        {
+          "field": "FIRSTHARMFULEVENTSPECIFICS_COUNT",
+          "label": "Count"
+        }
+      ]
+    }
+  }]
+}
+
+showChart("chartdiv1", config1);
+
+var time_periods = ["Hour", "Day", "Month"];
+var chart_types = ["radar", "bar"];
+for(var t=0; t<chart_types.length; t++) {
+  for(var p=0; p<time_periods.length; p++) {
+    var config1 = {
+      "type": chart_types[t],
+      "datasets": [ {
+      "url": url,
+      "query": {
+        "groupByFieldsForStatistics": "EXTRACT(" + time_periods[p] + " from REPORTDATE)",
+        "outStatistics": [
+          {
+            "statisticType": "count",
+            "onStatisticField": "FIRSTHARMFULEVENTSPECIFICS",
+            "outStatisticFieldName": "FIRSTHARMFULEVENTSPECIFICS_COUNT"
+          }
+        ],
+        "sqlFormat": "standard"
+      },
+      "mappings": {
+        "category": {"field": "EXPR_1", "label": time_periods[p]},
+        "series": [
+          {
+            "field": "FIRSTHARMFULEVENTSPECIFICS_COUNT",
+            "label": "Event Type"
+          }
+        ]
+      }
+    }]
+  };
+  showChart("chartdiv" + time_periods[p] + chart_types[t], config1);
+
+
+  }
+}
+</script>
+
+<!-- HTML -->
+<a href="./">&lt; Back Home</a>
+<h3>DC VisionZero</h3>
+<em>
+  whereby we illustrate a method for the graphing of multiple scatterplots of data utilizing two queries of a Geoservice and two series of a query.
+</em>
+<div id="chartdiv1" class="chart"></div>
+<h2>Crashes by Hour of Day</h2>
+<div id="chartdivHourbar" class="chart"></div>
+<div id="chartdivHourradar" class="chart"></div>
+<h2>Crashes by Day of Year</h2>
+<div id="chartdivDaybar" class="chart"></div>
+<div id="chartdivDayradar" class="chart"></div>
+<h2>Crashes by Month</h2>
+<div id="chartdivMonthbar" class="chart"></div>
+<div id="chartdivMonthradar" class="chart"></div>
+
+  </body>
+</html>
