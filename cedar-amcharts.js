@@ -182,18 +182,19 @@ function getLayerQueryUrl(layer, query){
 
           // Only clone scatterplots
           if(graphSpec.xField !== undefined && series.x !== undefined && series.y !== undefined) {
-            graph.xField = series.x;
-            graph.yField = series.y;
+            graph.xField = series.x.field;
+            graph.yField = series.y.field;
 
-            graph.balloonText = series.name + " [[" + series.label + "]]: <b>[[" + series.x + "]], [[" + series.y + "]]</b>";
+            graph.balloonText = series.name + " [[" + series.label + "]] <br/>"
+              + series.x.label + ": [[" + series.x.field + "]], "
+              + series.y.label + ": [[" + series.y.field + "]]";
+
             graph.labelText = "";
-            console.log("X/Y Fields", [graph.xField, graph.yField])
 
           }
           if(graphSpec.valueField !== undefined && series.value !== undefined) {
-            console.log("Value", [graph.valueField, series.value])
-            graph.valueField = series.value;
-            graph.balloonText += "<br/> [["+ graph.valueField +"]]";
+            graph.valueField = series.value.field;
+            graph.balloonText += "<br/> " + series.value.label + ": [["+ graph.valueField +"]]";
           }
           spec.graphs.push(graph)
         } // for(mappings)

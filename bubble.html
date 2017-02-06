@@ -26,39 +26,21 @@
 <script>
 var config1 = {
   "type": "scatter",
-  "datasets": [ {
-    "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-    "query": {},
-    "mappings": {
-      "series": [
-        {
-          "name": "Teachers",
-          "x": {"field": "Number_of", "label": "Number of Teachers"},
-          "y": {"field": "F_of_teach", "label": "Fraction of Teachers"},
-          "label": "Name"
-        },
-        {
-          "name": "Free Lunches",
-          "x": {"field": "Number_of", "label": "Number of Teachers"},
-          "y": {"field": "F_of_teach", "label": "Fraction of Teachers"},
-          "label": "Name"
-        }
-      ]
+  "datasets": [
+    {
+      "url":"https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+      "query":{},
+      "mappings":{
+        "series": [ {
+            "name": "Teachers",
+            "x": {"field": "Number_of", "label": "Number of Teachers"},
+            "y": {"field": "F_of_teach", "label": "Fraction of Teachers"},
+            "value": {"field": "Not_Taught", "label": "Number not Taught"},
+            "label": "Name"
+          }]
+      }
     }
-  },{
-    "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
-    "query": {},
-    "mappings": {
-      "series": [
-        {
-          "name": "Limited En?",
-          "x": {"field": "Number_of", "label": "Number of Teachers"},
-          "y": {"field": "F_of_teach", "label": "Fraction of Teachers"},
-          "label": "Name"
-        }
-      ]
-    }
-  }]
+  ]
 }
 
 showChart("chartdiv1", config1);
