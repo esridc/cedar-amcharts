@@ -38,6 +38,10 @@ function getLayerQueryUrl(layer, q){
     var transformFunctions = [];
     var config = clone(c);
 
+    if(config.type == "custom") {
+      return drawChart(elementId, config);
+    }
+
     if(config.datasets === undefined || config.datasets === null) {
         config.datasets = [config]
     }
@@ -154,8 +158,10 @@ function getLayerQueryUrl(layer, q){
   }
 
   function drawChart(elementId, config, data) {
-    // FIXME Clone the spec
-    console.log("drawChart", data)
+    if(config.type == "custom") {
+      var chart = AmCharts.makeChart( elementId, config.specification );
+      return;
+    }
     var spec = clone(specs[config.type]);
 
     // set the data and defaults
