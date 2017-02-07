@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>AmCharts</title>
+
+  </head>
+  <body id="" onload="">
+    <!-- Styles -->
+    <style>
+    .chart {
+      width: 100%;
+      height: 300px;
+    }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="./cedar-amcharts.js"></script>
+
+<!-- Chart code -->
+<script>
+var config1 = {
+  "type": "line",
+  "datasets": [ {
+  "url": "https://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/DC_Crashes/FeatureServer/0",
+  "query": {
+    "groupByFieldsForStatistics": "EXTRACT(YEAR from REPORTDATE)",
+    "outStatistics": [
+      {
+        "statisticType": "sum",
+        "onStatisticField": "MAJORINJURIES",
+        "outStatisticFieldName": "MAJORINJURIES_SUM"
+      },{
+        "statisticType": "sum",
+        "onStatisticField": "MINORINJURIES",
+        "outStatisticFieldName": "MINORINJURIES_SUM"
+      }
+    ],
+    "sqlFormat": "standard"
+  },
+  "mappings": {
+    "category": {"field": "EXPR_1", "label": "Year"},
+    "group": true,
+    "series": [
+      {
+        "field": "MAJORINJURIES_SUM",
+        "label": "Major Injuries"
+      },{
+        "field": "MINORINJURIES_SUM",
+        "label": "Minor Injuries"
+      }
+    ]
+  }
+}],
+"overrides": {
+  "categoryAxis": {
+    "guides": [{
+      category: "2015",
+      lineColor: "#CC0000",
+      lineAlpha: 1,
+      dashLength: 2,
+      inside: true,
+      labelRotation: 90,
+      label: "VisionZero Started"
+    },{
+      category: "2024",
+      lineColor: "#CC0000",
+      lineAlpha: 1,
+      dashLength: 2,
+      inside: true,
+      labelRotation: 90,
+      label: "VisionZero Goal"
+    }]
+  }
+}
+};
+showChart("chartdivLine", config1);
+config1.type = "area";
+showChart("chartdivArea", config1);
+
+</script>
+
+<!-- HTML -->
+<a href="./">&lt; Back Home</a>
+
+<h3>Line Chart</h3>
+<div id="chartdivLine" class="chart"></div>
+<h3>Area Chart</h3>
+<div id="chartdivArea" class="chart"></div>
+<pre>
+  <code>
+    var config1 = {
+      "type": "line",
+      "datasets": [ {
+      "url": "https://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/DC_Crashes/FeatureServer/0",
+      "query": {
+        "groupByFieldsForStatistics": "EXTRACT(YEAR from REPORTDATE)",
+        "outStatistics": [
+          {
+            "statisticType": "sum",
+            "onStatisticField": "MAJORINJURIES",
+            "outStatisticFieldName": "MAJORINJURIES_SUM"
+          },{
+            "statisticType": "sum",
+            "onStatisticField": "MINORINJURIES",
+            "outStatisticFieldName": "MINORINJURIES_SUM"
+          }
+        ],
+        "sqlFormat": "standard"
+      },
+      "mappings": {
+        "category": {"field": "EXPR_1", "label": "Year"},
+        "series": [
+          {
+            "field": "MAJORINJURIES_SUM",
+            "label": "Major Injuries"
+          },{
+            "field": "MINORINJURIES_SUM",
+            "label": "Minor Injuries"
+          }
+        ]
+      }
+    }]
+    };
+    showChart("chartdiv1", config1);
+  </code>
+</pre>
+  </body>
+</html>

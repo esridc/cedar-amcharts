@@ -1,4 +1,5 @@
 function clone(obj) {
+  console.log("clone", obj)
   return JSON.parse(JSON.stringify(obj));
 }
 
@@ -36,6 +37,10 @@ function getLayerQueryUrl(layer, q){
     var requests = [];
     var join_keys = [];
     var transformFunctions = [];
+
+    if(config.type == "custom") {
+      return drawChart(elementId, config);
+    }
 
     if(config.datasets === undefined || config.datasets === null) {
         config.datasets = [config]
@@ -152,8 +157,10 @@ function getLayerQueryUrl(layer, q){
   }
 
   function drawChart(elementId, config, data) {
-    // FIXME Clone the spec
-    console.log("drawChart", data)
+    if(config.type == "custom") {
+      var chart = AmCharts.makeChart( elementId, config.specification );
+      return;
+    }
     var spec = clone(specs[config.type]);
 
     // set the data and defaults
@@ -170,9 +177,13 @@ function getLayerQueryUrl(layer, q){
           var graph = JSON.parse(JSON.stringify(graphSpec));
 
           graph.title = series.label;
+
+          // TODO: look at all fields
           graph.valueField = series.field + "_" + s;
           graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
           graph.labelText = "[[" + series.field + "]]";
+          // graph.colorField = graph.valueField;
+          // graph.alphaField = graph.valueField;
 
           spec.titleField = "categoryField";
           spec.valueField = graph.valueField
@@ -205,6 +216,7 @@ function getLayerQueryUrl(layer, q){
     }
 
     // apply overrides
+    console.log("Overrides?", config)
     if (config.overrides) {
       mergeRecursive(spec, config.overrides);
     }
@@ -245,10 +257,102 @@ function getLayerQueryUrl(layer, q){
           "zoomable": false
         },
         "categoryAxis": {
+          "axisColor": "#DADADA",
+          "gridAlpha": 0.07,
           "gridPosition": "start",
           "gridAlpha": 0,
           "tickPosition": "start",
-          "tickLength": 20
+          "tickLength": 20,
+          "guides": []
+        },
+        "export": {
+          "enabled": true
+        }
+      },
+      "line": {
+        "type": "serial",
+        "theme": "light",
+        "graphs": [{
+          "fillAlphas": 0,
+          "lineAlpha": 1,
+          "dashLengthField": "dashLengthLine",
+          "useLineColorForBulletBorder": true,
+          "bulletBorderThickness": 3,
+          "bullet": "circle",
+          "bulletBorderAlpha": 0.8,
+          "bulletAlpha": 0.8,
+          "bulletColor": "#FFFFFF",
+        }],
+        "legend": {
+          "horizontalGap": 10,
+          "position": "bottom",
+          "useGraphSettings": true,
+          "markerSize": 10
+        },
+        "valueAxes": [ {
+          "gridColor": "#FFFFFF",
+          "gridAlpha": 0.2,
+          "dashLength": 0,
+        } ],
+        "gridAboveGraphs": true,
+        "startDuration": 0.1,
+        "startEffect": "easeInSine",
+        "chartCursor": {
+          "categoryBalloonEnabled": false,
+          "cursorAlpha": 0,
+          "zoomable": false
+        },
+        "categoryAxis": {
+          "gridPosition": "start",
+          "gridAlpha": 0,
+          "tickPosition": "start",
+          "tickLength": 20,
+          "guides": []
+        },
+        "export": {
+          "enabled": true
+        }
+      },
+      "area": {
+        "type": "serial",
+        "theme": "light",
+        "graphs": [{
+          "fillAlphas": 0.6,
+          "lineAlpha": 1,
+          "dashLengthField": "dashLengthLine",
+          "useLineColorForBulletBorder": true,
+          "bulletBorderThickness": 3,
+          "bullet": "circle",
+          "bulletBorderAlpha": 0.8,
+          "bulletAlpha": 0.8,
+          "bulletColor": "#FFFFFF",
+        }],
+        "legend": {
+          "horizontalGap": 10,
+          "position": "bottom",
+          "useGraphSettings": true,
+          "markerSize": 10
+        },
+        "valueAxes": [ {
+          "gridColor": "#FFFFFF",
+          "gridAlpha": 0.2,
+          "dashLength": 0,
+          "stackType": "regular"
+        } ],
+        "gridAboveGraphs": true,
+        "startDuration": 0.1,
+        "startEffect": "easeInSine",
+        "chartCursor": {
+          "categoryBalloonEnabled": false,
+          "cursorAlpha": 0,
+          "zoomable": false
+        },
+        "categoryAxis": {
+          "gridPosition": "start",
+          "gridAlpha": 0,
+          "tickPosition": "start",
+          "tickLength": 20,
+          "guides": []
         },
         "export": {
           "enabled": true

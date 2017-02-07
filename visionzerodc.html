@@ -57,7 +57,7 @@ var config1 = {
 showChart("chartdiv1", config1);
 
 var time_periods = ["Hour", "Day", "Month"];
-var chart_types = ["radar", "bar"];
+var chart_types = ["radar", "bar", "line"];
 for(var t=0; t<chart_types.length; t++) {
   for(var p=0; p<time_periods.length; p++) {
     var config1 = {
@@ -68,9 +68,9 @@ for(var t=0; t<chart_types.length; t++) {
         "groupByFieldsForStatistics": "EXTRACT(" + time_periods[p] + " from REPORTDATE)",
         "outStatistics": [
           {
-            "statisticType": "count",
-            "onStatisticField": "FIRSTHARMFULEVENTSPECIFICS",
-            "outStatisticFieldName": "FIRSTHARMFULEVENTSPECIFICS_COUNT"
+            "statisticType": "sum",
+            "onStatisticField": "MAJORINJURIES",
+            "outStatisticFieldName": "MAJORINJURIES_SUM"
           }
         ],
         "sqlFormat": "standard"
@@ -79,8 +79,8 @@ for(var t=0; t<chart_types.length; t++) {
         "category": {"field": "EXPR_1", "label": time_periods[p]},
         "series": [
           {
-            "field": "FIRSTHARMFULEVENTSPECIFICS_COUNT",
-            "label": "Event Type"
+            "field": "MAJORINJURIES_SUM",
+            "label": "Major Injuries"
           }
         ]
       }
@@ -103,12 +103,15 @@ for(var t=0; t<chart_types.length; t++) {
 <h2>Crashes by Hour of Day</h2>
 <div id="chartdivHourbar" class="chart"></div>
 <div id="chartdivHourradar" class="chart"></div>
+<div id="chartdivHourline" class="chart"></div>
 <h2>Crashes by Day of Year</h2>
 <div id="chartdivDaybar" class="chart"></div>
 <div id="chartdivDayradar" class="chart"></div>
+<div id="chartdivDayline" class="chart"></div>
 <h2>Crashes by Month</h2>
 <div id="chartdivMonthbar" class="chart"></div>
 <div id="chartdivMonthradar" class="chart"></div>
+<div id="chartdivMonthline" class="chart"></div>
 
   </body>
 </html>
