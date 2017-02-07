@@ -1,4 +1,5 @@
 function clone(obj) {
+  console.log("clone", obj)
   return JSON.parse(JSON.stringify(obj));
 }
 
@@ -229,6 +230,51 @@ function getLayerQueryUrl(layer, q){
           "lineAlpha": 0.8,
           "type": "column",
           "color": "#000000"
+        }],
+        "theme": "dark",
+        "legend": {
+          "horizontalGap": 10,
+          "maxColumns": 1,
+          "position": "right",
+          "useGraphSettings": true,
+          "markerSize": 10
+        },
+        "valueAxes": [ {
+          "gridColor": "#FFFFFF",
+          "gridAlpha": 0.2,
+          "dashLength": 0,
+          "stackType": "regular"
+        } ],
+        "gridAboveGraphs": true,
+        "startDuration": 0.3,
+        "startEffect": "easeInSine",
+        "chartCursor": {
+          "categoryBalloonEnabled": false,
+          "cursorAlpha": 0,
+          "zoomable": false
+        },
+        "categoryAxis": {
+          "gridPosition": "start",
+          "gridAlpha": 0,
+          "tickPosition": "start",
+          "tickLength": 20
+        },
+        "export": {
+          "enabled": true
+        }
+      },
+      "line": {
+        "type": "serial",
+        "graphs": [{
+          "fillAlphas": 0,
+          "lineAlpha": 1,
+          "dashLengthField": "dashLengthLine",
+          "useLineColorForBulletBorder": true,
+          "bulletBorderThickness": 3,
+          "bullet": "circle",
+          "bulletBorderAlpha": 0.8,
+          "bulletAlpha": 0.8,
+          "bulletColor": "#FFFFFF",
         }],
         "theme": "dark",
         "legend": {
