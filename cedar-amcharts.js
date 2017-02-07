@@ -32,11 +32,10 @@ function getLayerQueryUrl(layer, q){
     return url.substring(0, url.length - 1)
   }
 
-  function showChart(elementId, c) {
+  function showChart(elementId, config) {
     var requests = [];
     var join_keys = [];
     var transformFunctions = [];
-    var config = clone(c);
 
     if(config.datasets === undefined || config.datasets === null) {
         config.datasets = [config]
@@ -55,7 +54,6 @@ function getLayerQueryUrl(layer, q){
 
     // Join the features into a single layer
     Promise.all(requests).then(function(responses) {
-      console.log("Promise fulfilled", responses);
       var data = flattenFeatures(join_keys, responses, transformFunctions);
       drawChart(elementId, config, data);
     })
