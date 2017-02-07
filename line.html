@@ -80,8 +80,9 @@ var config1 = {
 }
 };
 showChart("chartdivLine", config1);
-config1.type = "area";
-showChart("chartdivArea", config1);
+config2 = clone(config1);
+config2.type = "area";
+showChart("chartdivArea", config2);
 
 </script>
 
