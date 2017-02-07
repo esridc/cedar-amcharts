@@ -33,11 +33,10 @@ function getLayerQueryUrl(layer, q){
     return url.substring(0, url.length - 1)
   }
 
-  function showChart(elementId, c) {
+  function showChart(elementId, config) {
     var requests = [];
     var join_keys = [];
     var transformFunctions = [];
-    var config = clone(c);
 
     if(config.type == "custom") {
       return drawChart(elementId, config);
