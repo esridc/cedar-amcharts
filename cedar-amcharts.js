@@ -1,4 +1,9 @@
-function getLayerQueryUrl(layer, query){
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function getLayerQueryUrl(layer, q){
+  var query = clone(q);
   if(query === null || query === undefined) {
     query = {}
   }
@@ -16,7 +21,7 @@ function getLayerQueryUrl(layer, query){
     if(query.outFields === null || query.outFields === undefined) {
       query.outFields = "*";
     }
-    return url = layer + "/query?" + getAsUriParameters(query);
+    return layer + "/query?" + getAsUriParameters(query);
   }
   function getAsUriParameters(data) {
     var url = '';
@@ -32,7 +37,6 @@ function getLayerQueryUrl(layer, query){
     var join_keys = [];
     var transformFunctions = [];
 
-
     if(config.datasets === undefined || config.datasets === null) {
         config.datasets = [config]
     }
@@ -41,7 +45,7 @@ function getLayerQueryUrl(layer, query){
     for(s=0; s<config.datasets.length; s++) {
       var dataset = config.datasets[s]
       if(dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
-        join_keys.push(dataset.mappings.category); // foreign key lookup
+        join_keys.push(dataset.mappings.category.field); // foreign key lookup
       }
       transformFunctions.push(dataset.featureTransform);
       var url = getLayerQueryUrl(dataset.url,dataset.query);
@@ -50,7 +54,6 @@ function getLayerQueryUrl(layer, query){
 
     // Join the features into a single layer
     Promise.all(requests).then(function(responses) {
-      console.log("Promise fulfilled", responses);
       var data = flattenFeatures(join_keys, responses, transformFunctions);
       drawChart(elementId, config, data);
     })
@@ -151,7 +154,7 @@ function getLayerQueryUrl(layer, query){
   function drawChart(elementId, config, data) {
     // FIXME Clone the spec
     console.log("drawChart", data)
-    var spec = JSON.parse(JSON.stringify(specs[config.type]));
+    var spec = clone(specs[config.type]);
 
     // set the data and defaults
     spec.dataProvider = data;
@@ -182,18 +185,19 @@ function getLayerQueryUrl(layer, query){
 
           // Only clone scatterplots
           if(graphSpec.xField !== undefined && series.x !== undefined && series.y !== undefined) {
-            graph.xField = series.x;
-            graph.yField = series.y;
+            graph.xField = series.x.field;
+            graph.yField = series.y.field;
 
-            graph.balloonText = series.name + " [[" + series.label + "]]: <b>[[" + series.x + "]], [[" + series.y + "]]</b>";
+            graph.balloonText = series.name + " [[" + series.label + "]] <br/>"
+              + series.x.label + ": [[" + series.x.field + "]], "
+              + series.y.label + ": [[" + series.y.field + "]]";
+
             graph.labelText = "";
-            console.log("X/Y Fields", [graph.xField, graph.yField])
 
           }
           if(graphSpec.valueField !== undefined && series.value !== undefined) {
-            console.log("Value", [graph.valueField, series.value])
-            graph.valueField = series.value;
-            graph.balloonText += "<br/> [["+ graph.valueField +"]]";
+            graph.valueField = series.value.field;
+            graph.balloonText += "<br/> " + series.value.label + ": [["+ graph.valueField +"]]";
           }
           spec.graphs.push(graph)
         } // for(mappings)

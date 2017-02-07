@@ -55,7 +55,7 @@ for(var p=0; p<time_periods.length; p++) {
         "sqlFormat": "standard"
       },
       "mappings": {
-        "category": "EXPR_1",
+        "category": {"field": time_periods[p], "label": time_periods[p]},
         "series": [
           {
             "field": "OFFENSE_COUNT",

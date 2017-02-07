@@ -31,7 +31,7 @@ var config1 = {
     "orderByFields": "Date"
   },
   "mappings": {
-    "category": "Date",
+    "category": {"field": "Date", "label": "Date"},
     "series": [
       {
         "field": "Injuries",
@@ -41,7 +41,7 @@ var config1 = {
   },
   "overrides": {
     "graphs": [{
-      "balloonText": "<span style='font-size:18px;'>[[value]]</span>"
+      "balloonText": "<span style='font-size:18px;'>[[value]] injured</span>"
     }]
   },
   // a transformation that will be applied to each returned feature

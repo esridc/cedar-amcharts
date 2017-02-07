@@ -34,7 +34,7 @@ var config1 = {
         "outStatistics": "[{'statisticType':'sum','onStatisticField': 'MAJORINJURIES','outStatisticFieldName': 'MAJORINJURIES'},{'statisticType':'sum','onStatisticField': 'MINORINJURIES','outStatisticFieldName': 'MINORINJURIES'}]"
     },
     "mappings":{
-      "category": "EXPR_1",
+      "category": {"field": "EXPR_1", "label": "Month"},
       "series": [
         { "field": "MINORINJURIES", "label": "Minor Injuries"},
         { "field": "MAJORINJURIES", "label": "Major Injuries"}
@@ -53,7 +53,7 @@ var config2 = {
         "outStatistics": "[{'statisticType':'sum','onStatisticField': 'PEDESTRIANSINVOLVED','outStatisticFieldName': 'PEDESTRIANSINVOLVED'},{'statisticType':'sum','onStatisticField': 'CYCLISTSINVOLVED','outStatisticFieldName': 'CYCLISTSINVOLVED'}]"
     },
     "mappings":{
-      "category": "EXPR_1",
+      "category": {"field": "EXPR_1", "label": "Month"},
       "group": true,
       "series": [
         { "field": "PEDESTRIANSINVOLVED", "label": "Pedestrians"},
@@ -80,7 +80,7 @@ var config1 = {
         "outStatistics": "[{'statisticType':'sum','onStatisticField': 'MAJORINJURIES','outStatisticFieldName': 'MAJORINJURIES'},{'statisticType':'sum','onStatisticField': 'MINORINJURIES','outStatisticFieldName': 'MINORINJURIES'}]"
     },
     "mappings":{
-      "category": "EXPR_1",
+      "category": {"field": "EXPR_1", "label": "Month"},
       "series": [
         { "field": "MINORINJURIES", "label": "Minor Injuries"},
         { "field": "MAJORINJURIES", "label": "Major Injuries"}
@@ -99,7 +99,7 @@ var config2 = {
         "outStatistics": "[{'statisticType':'sum','onStatisticField': 'PEDESTRIANSINVOLVED','outStatisticFieldName': 'PEDESTRIANSINVOLVED'},{'statisticType':'sum','onStatisticField': 'CYCLISTSINVOLVED','outStatisticFieldName': 'CYCLISTSINVOLVED'}]"
     },
     "mappings":{
-      "category": "EXPR_1",
+      "category": {"field": "EXPR_1", "label": "Month"},
       "group": true,
       "series": [
         { "field": "PEDESTRIANSINVOLVED", "label": "Pedestrians"},
