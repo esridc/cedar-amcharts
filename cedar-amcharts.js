@@ -60,7 +60,6 @@ function getLayerQueryUrl(layer, q){
 
     // Join the features into a single layer
     Promise.all(requests).then(function(responses) {
-      console.log("Promise fulfilled", responses);
       var data = flattenFeatures(join_keys, responses, transformFunctions);
       drawChart(elementId, config, data);
     })
@@ -179,9 +178,13 @@ function getLayerQueryUrl(layer, q){
           var graph = JSON.parse(JSON.stringify(graphSpec));
 
           graph.title = series.label;
+
+          // TODO: look at all fields
           graph.valueField = series.field + "_" + s;
           graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
           graph.labelText = "[[" + series.field + "]]";
+          // graph.colorField = graph.valueField;
+          // graph.alphaField = graph.valueField;
 
           spec.titleField = "categoryField";
           spec.valueField = graph.valueField
@@ -214,6 +217,7 @@ function getLayerQueryUrl(layer, q){
     }
 
     // apply overrides
+    console.log("Overrides?", config)
     if (config.overrides) {
       mergeRecursive(spec, config.overrides);
     }
@@ -254,10 +258,13 @@ function getLayerQueryUrl(layer, q){
           "zoomable": false
         },
         "categoryAxis": {
+          "axisColor": "#DADADA",
+          "gridAlpha": 0.07,
           "gridPosition": "start",
           "gridAlpha": 0,
           "tickPosition": "start",
-          "tickLength": 20
+          "tickLength": 20,
+          "guides": []
         },
         "export": {
           "enabled": true
@@ -265,6 +272,7 @@ function getLayerQueryUrl(layer, q){
       },
       "line": {
         "type": "serial",
+        "theme": "light",
         "graphs": [{
           "fillAlphas": 0,
           "lineAlpha": 1,
@@ -276,11 +284,9 @@ function getLayerQueryUrl(layer, q){
           "bulletAlpha": 0.8,
           "bulletColor": "#FFFFFF",
         }],
-        "theme": "dark",
         "legend": {
           "horizontalGap": 10,
-          "maxColumns": 1,
-          "position": "right",
+          "position": "bottom",
           "useGraphSettings": true,
           "markerSize": 10
         },
@@ -288,10 +294,9 @@ function getLayerQueryUrl(layer, q){
           "gridColor": "#FFFFFF",
           "gridAlpha": 0.2,
           "dashLength": 0,
-          "stackType": "regular"
         } ],
         "gridAboveGraphs": true,
-        "startDuration": 0.3,
+        "startDuration": 0.1,
         "startEffect": "easeInSine",
         "chartCursor": {
           "categoryBalloonEnabled": false,
@@ -302,7 +307,53 @@ function getLayerQueryUrl(layer, q){
           "gridPosition": "start",
           "gridAlpha": 0,
           "tickPosition": "start",
-          "tickLength": 20
+          "tickLength": 20,
+          "guides": []
+        },
+        "export": {
+          "enabled": true
+        }
+      },
+      "area": {
+        "type": "serial",
+        "theme": "light",
+        "graphs": [{
+          "fillAlphas": 0.6,
+          "lineAlpha": 1,
+          "dashLengthField": "dashLengthLine",
+          "useLineColorForBulletBorder": true,
+          "bulletBorderThickness": 3,
+          "bullet": "circle",
+          "bulletBorderAlpha": 0.8,
+          "bulletAlpha": 0.8,
+          "bulletColor": "#FFFFFF",
+        }],
+        "legend": {
+          "horizontalGap": 10,
+          "position": "bottom",
+          "useGraphSettings": true,
+          "markerSize": 10
+        },
+        "valueAxes": [ {
+          "gridColor": "#FFFFFF",
+          "gridAlpha": 0.2,
+          "dashLength": 0,
+          "stackType": "regular"
+        } ],
+        "gridAboveGraphs": true,
+        "startDuration": 0.1,
+        "startEffect": "easeInSine",
+        "chartCursor": {
+          "categoryBalloonEnabled": false,
+          "cursorAlpha": 0,
+          "zoomable": false
+        },
+        "categoryAxis": {
+          "gridPosition": "start",
+          "gridAlpha": 0,
+          "tickPosition": "start",
+          "tickLength": 20,
+          "guides": []
         },
         "export": {
           "enabled": true

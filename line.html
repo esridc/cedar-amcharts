@@ -45,6 +45,7 @@ var config1 = {
   },
   "mappings": {
     "category": {"field": "EXPR_1", "label": "Year"},
+    "group": true,
     "series": [
       {
         "field": "MAJORINJURIES_SUM",
@@ -55,15 +56,42 @@ var config1 = {
       }
     ]
   }
-}]
+}],
+"overrides": {
+  "categoryAxis": {
+    "guides": [{
+      category: "2015",
+      lineColor: "#CC0000",
+      lineAlpha: 1,
+      dashLength: 2,
+      inside: true,
+      labelRotation: 90,
+      label: "VisionZero Started"
+    },{
+      category: "2024",
+      lineColor: "#CC0000",
+      lineAlpha: 1,
+      dashLength: 2,
+      inside: true,
+      labelRotation: 90,
+      label: "VisionZero Goal"
+    }]
+  }
+}
 };
-showChart("chartdiv1", config1);
+showChart("chartdivLine", config1);
+config1.type = "area";
+showChart("chartdivArea", config1);
 
 </script>
 
 <!-- HTML -->
 <a href="./">&lt; Back Home</a>
-<div id="chartdiv1" class="chart"></div>
+
+<h3>Line Chart</h3>
+<div id="chartdivLine" class="chart"></div>
+<h3>Area Chart</h3>
+<div id="chartdivArea" class="chart"></div>
 <pre>
   <code>
     var config1 = {
