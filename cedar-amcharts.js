@@ -2,6 +2,8 @@ function clone(obj) {
   console.log("clone", obj)
   return JSON.parse(JSON.stringify(obj));
 }
+const flatten = arr => arr.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
+
 
 function getLayerQueryUrl(layer, q){
   var query = clone(q);
@@ -37,6 +39,7 @@ function getLayerQueryUrl(layer, q){
     var requests = [];
     var join_keys = [];
     var transformFunctions = [];
+    var dataResponses = []
 
     if(config.type == "custom") {
       return drawChart(elementId, config);
@@ -53,13 +56,18 @@ function getLayerQueryUrl(layer, q){
         join_keys.push(dataset.mappings.category.field); // foreign key lookup
       }
       transformFunctions.push(dataset.featureTransform);
-      var url = getLayerQueryUrl(dataset.url,dataset.query);
-      requests.push(getData(url))
+      if(dataset.url !== undefined) {
+        var url = getLayerQueryUrl(dataset.url,dataset.query);
+        requests.push(getData(url))
+      } else if (dataset.data !== undefined) {
+        dataResponses.push(dataset.data);
+      }
     }
 
     // Join the features into a single layer
     Promise.all(requests).then(function(responses) {
-      var data = flattenFeatures(join_keys, responses, transformFunctions);
+      dataResponses.push(responses)
+      var data = flattenFeatures(join_keys, flatten(dataResponses), transformFunctions);
       drawChart(elementId, config, data);
     })
   }
