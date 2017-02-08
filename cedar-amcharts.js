@@ -125,7 +125,7 @@ function getLayerQueryUrl(layer, q){
       for(var d=0;d<featureSets.length; d++) {
         var featureSet = featureSets[d];
         var transformFunction = getTransformFunction(transformFunctions[d]);
-        console.log('transformFunction', transformFunction);
+
         for(var f=0; f<featureSet.features.length; f++) {
           features.push(transformFunction(featureSet.features[f]));
         }
@@ -184,14 +184,35 @@ function getLayerQueryUrl(layer, q){
           var series = config.datasets[s].mappings.series[i];
           var graph = JSON.parse(JSON.stringify(graphSpec));
 
-          graph.title = series.label;
 
           // TODO: look at all fields
-          graph.valueField = series.field + "_" + s;
+          for(var fieldName in series) {
+
+            // Support setting either or both Field and Value default
+            // {
+            //   "alpha": {"field": "opacity"},
+            //   "fillColors": {"field": "color", "value": "#F00"},
+            //   "field": "TOTAL_STUD_SUM",
+            //   "label": "Number of Students"
+            // }
+            if(series[fieldName].field !== undefined && series[fieldName].field !== null) {
+              graph[fieldName + "Field"] = series[fieldName].field
+
+              // Scatter plots aren't joined
+              if(config.type != 'scatter') {
+                graph[fieldName + "Field"] += "_" + s;
+              }
+            }
+            if (series[fieldName].value !== undefined && series[fieldName].value !== null) {
+              graph[fieldName] = series[fieldName].value
+            }
+          }
+          // graph.valueField = series.field + "_" + s;
           graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
-          graph.labelText = "[[" + series.field + "]]";
-          // graph.colorField = graph.valueField;
-          // graph.alphaField = graph.valueField;
+          graph.labelText = "[[" + graph.valueField + "]]";
+          if(series.label !== undefined && series.label !== null) {
+            graph.title = series.label;
+          }
 
           spec.titleField = "categoryField";
           spec.valueField = graph.valueField
@@ -204,8 +225,8 @@ function getLayerQueryUrl(layer, q){
 
           // Only clone scatterplots
           if(graphSpec.xField !== undefined && series.x !== undefined && series.y !== undefined) {
-            graph.xField = series.x.field;
-            graph.yField = series.y.field;
+            // graph.xField = series.x.field;
+            // graph.yField = series.y.field;
 
             graph.balloonText = series.name + " [[" + series.label + "]] <br/>"
               + series.x.label + ": [[" + series.x.field + "]], "
@@ -215,7 +236,7 @@ function getLayerQueryUrl(layer, q){
 
           }
           if(graphSpec.valueField !== undefined && series.value !== undefined) {
-            graph.valueField = series.value.field;
+            // graph.valueField = series.value.field;
             graph.balloonText += "<br/> " + series.value.label + ": [["+ graph.valueField +"]]";
           }
           spec.graphs.push(graph)
@@ -224,7 +245,6 @@ function getLayerQueryUrl(layer, q){
     }
 
     // apply overrides
-    console.log("Overrides?", config)
     if (config.overrides) {
       mergeRecursive(spec, config.overrides);
     }
@@ -409,6 +429,12 @@ function getLayerQueryUrl(layer, q){
         "type": "xy",
         "autoMarginOffset": 20,
         "startDuration": 0,
+        "legend": {
+          "horizontalGap": 10,
+          "position": "bottom",
+          "useGraphSettings": true,
+          "markerSize": 10
+        },
         "valueAxes": [ {
             "position": "bottom",
             "axisAlpha": 0

@@ -31,114 +31,116 @@ var config1 = {
       "features": [
         {
           "attributes": {
-            "ZIP_CODE": 20005,
+            "opacity": 0.2, "ZIP_CODE": 20005,
             "TOTAL_STUD_SUM": 327
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20024,
+            "opacity": 0.3, "ZIP_CODE": 20024,
             "TOTAL_STUD_SUM": 517
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20017,
+            "opacity": 0.4, "ZIP_CODE": 20017,
             "TOTAL_STUD_SUM": 597
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20015,
+            "opacity": 0.5, "ZIP_CODE": 20015,
             "TOTAL_STUD_SUM": 707
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20037,
+            "opacity": 0.2, "ZIP_CODE": 20037,
             "TOTAL_STUD_SUM": 760
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20018,
+            "opacity": 0.2, "ZIP_CODE": 20018,
             "TOTAL_STUD_SUM": 1052
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20012,
+            "opacity": 0.2, "ZIP_CODE": 20012,
             "TOTAL_STUD_SUM": 1184
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20007,
+            "opacity": 0.2, "ZIP_CODE": 20007,
             "TOTAL_STUD_SUM": 1584
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20008,
+            "opacity": 0.2, "ZIP_CODE": 20008,
             "TOTAL_STUD_SUM": 1625
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20003,
+            "opacity": 0.2, "ZIP_CODE": 20003,
             "TOTAL_STUD_SUM": 1869
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20009,
+            "opacity": 0.2, "ZIP_CODE": 20009,
             "TOTAL_STUD_SUM": 1945
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20001,
+            "opacity": 0.2, "ZIP_CODE": 20001,
             "TOTAL_STUD_SUM": 2164
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20010,
+            "opacity": 0.2, "ZIP_CODE": 20010,
             "TOTAL_STUD_SUM": 2282
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20019,
+            "opacity": 0.2, "ZIP_CODE": 20019,
             "TOTAL_STUD_SUM": 3278
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20011,
+            "opacity": 0.2, "ZIP_CODE": 20011,
             "TOTAL_STUD_SUM": 3817
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20020,
+            "opacity": 0.2, "ZIP_CODE": 20020,
             "TOTAL_STUD_SUM": 3901
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20032,
+            "opacity": 0.2, "ZIP_CODE": 20032,
             "TOTAL_STUD_SUM": 4360
           }
         },
         {
           "attributes": {
-            "ZIP_CODE": 20016,
+            "opacity": 0.2, "ZIP_CODE": 20016,
             "TOTAL_STUD_SUM": 4681
           }
         },
         {
           "attributes": {
+            "color": "#0F0",
+            "opacity": 0.9,
             "ZIP_CODE": 20002,
             "TOTAL_STUD_SUM": 5590
           }
@@ -152,7 +154,9 @@ var config1 = {
       },
       "series": [
         {
-          "field": "TOTAL_STUD_SUM",
+          "alpha": {"field": "opacity"},
+          "fillColors": {"field": "color", "value": "#F00"},
+          "value": {"field": "TOTAL_STUD_SUM"},
           "label": "Number of Students"
         }
       ]

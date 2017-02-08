@@ -46,7 +46,7 @@ var config1 = {
       "category": {"field": "FIRSTHARMFULEVENTSPECIFICS", "label": "Event Type"},
       "series": [
         {
-          "field": "FIRSTHARMFULEVENTSPECIFICS_COUNT",
+          "value": {"field": "FIRSTHARMFULEVENTSPECIFICS_COUNT"},
           "label": "Count"
         }
       ]
@@ -79,7 +79,7 @@ for(var t=0; t<chart_types.length; t++) {
         "category": {"field": "EXPR_1", "label": time_periods[p]},
         "series": [
           {
-            "field": "MAJORINJURIES_SUM",
+            "value": {"field": "MAJORINJURIES_SUM"},
             "label": "Major Injuries"
           }
         ]
