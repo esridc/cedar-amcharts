@@ -1,5 +1,4 @@
 function clone(obj) {
-  console.log("clone", obj)
   return JSON.parse(JSON.stringify(obj));
 }
 const flatten = arr => arr.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
@@ -52,7 +51,7 @@ function getLayerQueryUrl(layer, q){
     // For each series, query layer for data
     for(s=0; s<config.datasets.length; s++) {
       var dataset = config.datasets[s]
-      if(dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
+      if(config.type !== 'scatter' && dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
         join_keys.push(dataset.mappings.category.field); // foreign key lookup
       }
       transformFunctions.push(dataset.featureTransform);
@@ -116,8 +115,6 @@ function getLayerQueryUrl(layer, q){
   }
   // Join multiple layers by common keys
   function flattenFeatures(join_keys, featureSets, transformFunctions) {
-    console.log("Join Keys", join_keys)
-    console.log("featureSets", featureSets)
     var features = [];
 
     // No Join, just merge
@@ -196,11 +193,22 @@ function getLayerQueryUrl(layer, q){
             //   "label": "Number of Students"
             // }
             if(series[fieldName].field !== undefined && series[fieldName].field !== null) {
-              graph[fieldName + "Field"] = series[fieldName].field
 
+              graph[fieldName + "Field"] = series[fieldName].field
               // Scatter plots aren't joined
               if(config.type != 'scatter') {
                 graph[fieldName + "Field"] += "_" + s;
+              }
+            }
+
+            if(config.type == 'scatter') {
+              graph.yField = series.value.field
+              graph.xField = config.datasets[s].mappings.category.field
+
+              if(series.size !== undefined && series.size.field !== undefined) {
+                graph.valueField = series.size.field;
+              } else {
+                graph.valueField = null;
               }
             }
             if (series[fieldName].value !== undefined && series[fieldName].value !== null) {
@@ -208,11 +216,26 @@ function getLayerQueryUrl(layer, q){
             }
           }
           // graph.valueField = series.field + "_" + s;
-          graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
-          graph.labelText = "[[" + graph.valueField + "]]";
+
+          // TODO: wrap this into a function
           if(series.label !== undefined && series.label !== null) {
             graph.title = series.label;
+          } else if (series.value !== undefined && series.value !== null) {
+            if(series.value.label !== undefined && series.value.label !== null) {
+              graph.title = series.value.label
+            } else if(series.value.field !== undefined && series.value.field !== null) {
+              graph.title = series.value.field
+            }
+          } else if (series.y !== undefined && series.y !== null) {
+            if(series.y.label !== undefined && series.y.label !== null) {
+              graph.title = series.y.label
+            } else if(series.y.field !== undefined && series.y.field !== null) {
+              graph.title = series.y.field
+            }
           }
+
+          graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
+          // graph.labelText = "[[" + graph.valueField + "]]";
 
           spec.titleField = "categoryField";
           spec.valueField = graph.valueField
@@ -223,19 +246,7 @@ function getLayerQueryUrl(layer, q){
             graph.newStack = true
           }
 
-          // Only clone scatterplots
-          if(graphSpec.xField !== undefined && series.x !== undefined && series.y !== undefined) {
-            // graph.xField = series.x.field;
-            // graph.yField = series.y.field;
-
-            graph.balloonText = series.name + " [[" + series.label + "]] <br/>"
-              + series.x.label + ": [[" + series.x.field + "]], "
-              + series.y.label + ": [[" + series.y.field + "]]";
-
-            graph.labelText = "";
-
-          }
-          if(graphSpec.valueField !== undefined && series.value !== undefined) {
+          if(graph.valueField !== undefined && series.value !== undefined) {
             // graph.valueField = series.value.field;
             graph.balloonText += "<br/> " + series.value.label + ": [["+ graph.valueField +"]]";
           }

@@ -30,16 +30,15 @@ var config1 = {
     "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
     "query": {},
     "mappings": {
+      "category": {"field": "Number_of", "label": "Number of Teachers"},
       "series": [
         {
           "label": "Teachers",
-          "x": {"field": "Number_of", "label": "Number of Teachers"},
-          "y": {"field": "F_of_teach", "label": "Fraction of Teachers"},
+          "value": {"field": "F_of_teach"},
         },
         {
           "label": "Free Lunches",
-          "x": {"field": "Number_of", "label": "Number of Teachers"},
-          "y": {"field": "Free_Lunch", "label": "Fraction of Teachers"},
+          "value": {"field": "Free_Lunch"},
         }
       ]
     }
@@ -47,11 +46,10 @@ var config1 = {
     "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
     "query": {},
     "mappings": {
+      "category": {"field": "Number_of", "label": "Number of Teachers"},
       "series": [
         {
-          "label": "Limited En?",
-          "x": {"field": "Number_of", "label": "Number of Teachers"},
-          "y": {"field": "Limited_En", "label": "Fraction of Teachers"},
+          "value": {"field": "Limited_En", "label": "Limited En?"},
         }
       ]
     }
@@ -64,9 +62,9 @@ showChart("chartdiv1", config1);
 
 <!-- HTML -->
 <a href="./">&lt; Back Home</a>
-<h3>Multiple Scatterplot</h3>
+<h3>Scatterplots</h3>
 <em>
-  whereby we illustrate a method for the graphing of multiple scatterplots of data utilizing two queries of a Geoservice and two series of a query.
+  whereby we illustrate a method for the graphing of scatterplots of data utilizing two queries of a Geoservice and two series of a query.
 </em>
 <div id="chartdiv1" class="chart"></div>
 
