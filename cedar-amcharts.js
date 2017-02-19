@@ -1,6 +1,14 @@
 function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
+  if (!obj) {
+    return obj;
+  }
+  try {
+    return JSON.parse(JSON.stringify(obj));
+  } catch (e) {
+    console.log('Error trying to clone ', JSON.stringify(obj));
+  }
 }
+
 const flatten = arr => arr.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
 
 
@@ -34,6 +42,43 @@ function getLayerQueryUrl(layer, q){
     return url.substring(0, url.length - 1)
   }
 
+  // function showChart(elementId, config) {
+  //   var requests = [];
+  //   var join_keys = [];
+  //   var transformFunctions = [];
+  //   var dataResponses = []
+  //
+  //   if(config.type == "custom") {
+  //     return drawChart(elementId, config);
+  //   }
+  //
+  //   if(config.datasets === undefined || config.datasets === null) {
+  //       config.datasets = [config]
+  //   }
+  //
+  //   // For each series, query layer for data
+  //   for(s=0; s<config.datasets.length; s++) {
+  //     var dataset = config.datasets[s]
+  //     if(config.type !== 'scatter' && dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
+  //       join_keys.push(dataset.mappings.category.field); // foreign key lookup
+  //     }
+  //     transformFunctions.push(dataset.featureTransform);
+  //     if(dataset.url !== undefined) {
+  //       var url = getLayerQueryUrl(dataset.url,dataset.query);
+  //       requests.push(getData(url))
+  //     } else if (dataset.data !== undefined) {
+  //       dataResponses.push(dataset.data);
+  //     }
+  //   }
+  //
+  //   // Join the features into a single layer
+  //   Promise.all(requests).then(function(responses) {
+  //     dataResponses.push(responses)
+  //     var data = flattenFeatures(join_keys, flatten(dataResponses), transformFunctions);
+  //     drawChart(elementId, config, data);
+  //   })
+  // }
+
   function showChart(elementId, config) {
     var requests = [];
     var join_keys = [];
@@ -44,31 +89,38 @@ function getLayerQueryUrl(layer, q){
       return drawChart(elementId, config);
     }
 
-    if(config.datasets === undefined || config.datasets === null) {
-        config.datasets = [config]
-    }
-
     // For each series, query layer for data
-    for(s=0; s<config.datasets.length; s++) {
-      var dataset = config.datasets[s]
-      if(config.type !== 'scatter' && dataset.mappings.category !== undefined && dataset.mappings.category !== null) {
-        join_keys.push(dataset.mappings.category.field); // foreign key lookup
-      }
-      transformFunctions.push(dataset.featureTransform);
-      if(dataset.url !== undefined) {
-        var url = getLayerQueryUrl(dataset.url,dataset.query);
-        requests.push(getData(url))
-      } else if (dataset.data !== undefined) {
-        dataResponses.push(dataset.data);
-      }
-    }
+    for(s=0; s<config.series.length; s++) {
+      var series = config.series[s];
+      var datasets = series.datasets || [];
+      for (var d = 0; d<series.datasets.length; d++) {
+        var dataset = datasets[d];
+        // note assuming category is going to live out of fields
+        // if(series.type !== 'scatter' && series.category !== undefined && series.category !== null) {
+        //   join_keys.push(series.category.field); // foreign key lookup
+        // }
 
-    // Join the features into a single layer
-    Promise.all(requests).then(function(responses) {
-      dataResponses.push(responses)
-      var data = flattenFeatures(join_keys, flatten(dataResponses), transformFunctions);
-      drawChart(elementId, config, data);
-    })
+        if(dataset.join && dataset.join.field) {
+          join_keys.push(dataset.join.field); // foreign key lookup
+        }
+
+        // TODO: rename to dataset.transform?
+        transformFunctions.push(dataset.featureTransform);
+        if(dataset.url !== undefined) {
+          var url = getLayerQueryUrl(dataset.url, dataset.query);
+          requests.push(getData(url))
+        } else if (dataset.data !== undefined) {
+          dataResponses.push(dataset.data);
+        }
+      }
+
+      // Join the features into a single layer
+      Promise.all(requests).then(function(responses) {
+        dataResponses.push(responses)
+        var data = flattenFeatures(join_keys, flatten(dataResponses), transformFunctions);
+        drawChart(elementId, config, data);
+      })
+    }
   }
 
   function mergeRecursive (obj1, obj2) {
@@ -166,24 +218,37 @@ function getLayerQueryUrl(layer, q){
       var chart = AmCharts.makeChart( elementId, config.specification );
       return;
     }
-    var spec = clone(specs[config.type]);
+
+    // TOOD: better way to deal w/ this
+    var firstSeries = config.series[0];
+    var spec = clone(specs[firstSeries.type]);
 
     // set the data and defaults
     spec.dataProvider = data;
     spec.categoryField = "categoryField";
 
     // apply the mappings
-    if(config.datasets !== undefined ){
+    if(config.series !== undefined ){
       // Get the example graph spec
       var graphSpec = spec.graphs.pop();
-      for(var s=0; s < config.datasets.length; s++) {
-        for(var i=0; i < config.datasets[s].mappings.series.length; i++) {
-          var series = config.datasets[s].mappings.series[i];
-          var graph = JSON.parse(JSON.stringify(graphSpec));
+      for(var s=0; s < config.series.length; s++) {
+        var series = config.series[s];
+        var type = series.type;
+        var category = series.category;
 
+        // overwrite spec category field
+        // TODO: what if more than one series defines this
+        if (category && category.field) {
+          spec.categoryField = category.field;
+        }
 
-          // TODO: look at all fields
-          for(var fieldName in series) {
+        // configure a graph for each field
+        for(var i=0; i < series.fields.length; i++) {
+          var fieldMappings = series.fields[i];
+          var graph = clone(graphSpec);
+
+          //
+          for(var key in fieldMappings) {
 
             // Support setting either or both Field and Value default
             // {
@@ -192,47 +257,50 @@ function getLayerQueryUrl(layer, q){
             //   "field": "TOTAL_STUD_SUM",
             //   "label": "Number of Students"
             // }
-            if(series[fieldName].field !== undefined && series[fieldName].field !== null) {
+            var field = fieldMappings[key];
+            // TODO: should this just check if field is an object?
+            if(field.field !== undefined && field.field !== null) {
 
-              graph[fieldName + "Field"] = series[fieldName].field
+              graph[key + "Field"] = field.field
+              // TODO: is this still relevant?
               // Scatter plots aren't joined
-              if(config.type != 'scatter') {
-                graph[fieldName + "Field"] += "_" + s;
-              }
-            }
-
-            if(config.type == 'scatter') {
-              graph.yField = series.value.field
-              graph.xField = config.datasets[s].mappings.category.field
-
-              if(series.size !== undefined && series.size.field !== undefined) {
-                graph.valueField = series.size.field;
-              } else {
-                graph.valueField = null;
-              }
-            }
-            if (series[fieldName].value !== undefined && series[fieldName].value !== null) {
-              graph[fieldName] = series[fieldName].value
+              // if(type != 'scatter') {
+              //   graph[key + "Field"] += "_" + s;
+              // }
+            } else {
+              // scalar so just set the graph propery directly
+              graph[key] = field
             }
           }
+          if(type == 'scatter') {
+            graph.yField = graph.valueField; // series.value.field
+            graph.xField = graph.categorField;
+            if (graph.sizeField) {
+              graph.valueField = graph.sizeField;
+              // delete graph.sizeField;
+            } else {
+              delete graph.valueField;
+            }
+          }
+
           // graph.valueField = series.field + "_" + s;
 
           // TODO: wrap this into a function
-          if(series.label !== undefined && series.label !== null) {
-            graph.title = series.label;
-          } else if (series.value !== undefined && series.value !== null) {
-            if(series.value.label !== undefined && series.value.label !== null) {
-              graph.title = series.value.label
-            } else if(series.value.field !== undefined && series.value.field !== null) {
-              graph.title = series.value.field
-            }
-          } else if (series.y !== undefined && series.y !== null) {
-            if(series.y.label !== undefined && series.y.label !== null) {
-              graph.title = series.y.label
-            } else if(series.y.field !== undefined && series.y.field !== null) {
-              graph.title = series.y.field
-            }
-          }
+          // if(series.label !== undefined && series.label !== null) {
+          //   graph.title = series.label;
+          // } else if (fields.value !== undefined && fields.value !== null) {
+          //   if(fields.value.label !== undefined && fields.value.label !== null) {
+          //     graph.title = fields.value.label
+          //   } else if(fields.value.field !== undefined && fields.value.field !== null) {
+          //     graph.title = fields.value.field
+          //   }
+          // } else if (fields.y !== undefined && fields.y !== null) {
+          //   if(fields.y.label !== undefined && fields.y.label !== null) {
+          //     graph.title = fields.y.label
+          //   } else if(fields.y.field !== undefined && fields.y.field !== null) {
+          //     graph.title = fields.y.field
+          //   }
+          // }
 
           graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
           // graph.labelText = "[[" + graph.valueField + "]]";
@@ -241,19 +309,16 @@ function getLayerQueryUrl(layer, q){
           spec.valueField = graph.valueField
 
           // group vs. stack
-          var group = config.datasets[s].mappings.group
-          if(group !== undefined && group) {
-            graph.newStack = true
-          }
+          graph.newStack = series.stacked;
 
-          if(graph.valueField !== undefined && series.value !== undefined) {
-            // graph.valueField = series.value.field;
-            graph.balloonText += "<br/> " + series.value.label + ": [["+ graph.valueField +"]]";
+          if(graph.sizeField !== undefined && fields.size !== undefined) {
+            // graph.sizeField = series.size.field;
+            graph.balloonText += "<br/> " + fields.size.label + ": [["+ graph.sizeField +"]]";
           }
           spec.graphs.push(graph)
-        } // for(mappings)
-      } // for(series)
-    }
+        } // for (series.fields)
+      } // for (series)
+    } // if (series)
 
     // apply overrides
     if (config.overrides) {
@@ -263,6 +328,109 @@ function getLayerQueryUrl(layer, q){
     console.log("Spec", spec)
     var chart = AmCharts.makeChart( elementId, spec );
   }
+
+  // function drawChart(elementId, config, data) {
+  //   if(config.type == "custom") {
+  //     var chart = AmCharts.makeChart( elementId, config.specification );
+  //     return;
+  //   }
+  //   var spec = clone(specs[config.type]);
+  //
+  //   // set the data and defaults
+  //   spec.dataProvider = data;
+  //   spec.categoryField = "categoryField";
+  //
+  //   // apply the mappings
+  //   if(config.datasets !== undefined ){
+  //     // Get the example graph spec
+  //     var graphSpec = spec.graphs.pop();
+  //     for(var s=0; s < config.datasets.length; s++) {
+  //       for(var i=0; i < config.datasets[s].mappings.series.length; i++) {
+  //         var series = config.datasets[s].mappings.series[i];
+  //         var graph = JSON.parse(JSON.stringify(graphSpec));
+  //
+  //
+  //         // TODO: look at all fields
+  //         for(var fieldName in series) {
+  //
+  //           // Support setting either or both Field and Value default
+  //           // {
+  //           //   "alpha": {"field": "opacity"},
+  //           //   "fillColors": {"field": "color", "value": "#F00"},
+  //           //   "field": "TOTAL_STUD_SUM",
+  //           //   "label": "Number of Students"
+  //           // }
+  //           if(series[fieldName].field !== undefined && series[fieldName].field !== null) {
+  //
+  //             graph[fieldName + "Field"] = series[fieldName].field
+  //             // Scatter plots aren't joined
+  //             if(config.type != 'scatter') {
+  //               graph[fieldName + "Field"] += "_" + s;
+  //             }
+  //           }
+  //
+  //           if(config.type == 'scatter') {
+  //             graph.yField = series.value.field
+  //             graph.xField = config.datasets[s].mappings.category.field
+  //
+  //             if(series.size !== undefined && series.size.field !== undefined) {
+  //               graph.valueField = series.size.field;
+  //             } else {
+  //               graph.valueField = null;
+  //             }
+  //           }
+  //           if (series[fieldName].value !== undefined && series[fieldName].value !== null) {
+  //             graph[fieldName] = series[fieldName].value
+  //           }
+  //         }
+  //         // graph.valueField = series.field + "_" + s;
+  //
+  //         // TODO: wrap this into a function
+  //         if(series.label !== undefined && series.label !== null) {
+  //           graph.title = series.label;
+  //         } else if (series.value !== undefined && series.value !== null) {
+  //           if(series.value.label !== undefined && series.value.label !== null) {
+  //             graph.title = series.value.label
+  //           } else if(series.value.field !== undefined && series.value.field !== null) {
+  //             graph.title = series.value.field
+  //           }
+  //         } else if (series.y !== undefined && series.y !== null) {
+  //           if(series.y.label !== undefined && series.y.label !== null) {
+  //             graph.title = series.y.label
+  //           } else if(series.y.field !== undefined && series.y.field !== null) {
+  //             graph.title = series.y.field
+  //           }
+  //         }
+  //
+  //         graph.balloonText = graph.title + " [[" + spec.categoryField + "]]: <b>[[" + graph.valueField + "]]</b>";
+  //         // graph.labelText = "[[" + graph.valueField + "]]";
+  //
+  //         spec.titleField = "categoryField";
+  //         spec.valueField = graph.valueField
+  //
+  //         // group vs. stack
+  //         var group = config.datasets[s].mappings.group
+  //         if(group !== undefined && group) {
+  //           graph.newStack = true
+  //         }
+  //
+  //         if(graph.sizeField !== undefined && series.size !== undefined) {
+  //           // graph.sizeField = series.size.field;
+  //           graph.balloonText += "<br/> " + series.size.label + ": [["+ graph.sizeField +"]]";
+  //         }
+  //         spec.graphs.push(graph)
+  //       } // for(mappings)
+  //     } // for(series)
+  //   }
+  //
+  //   // apply overrides
+  //   if (config.overrides) {
+  //     mergeRecursive(spec, config.overrides);
+  //   }
+  //
+  //   console.log("Spec", spec)
+  //   var chart = AmCharts.makeChart( elementId, spec );
+  // }
 
     var specs = {
       "bar": {
