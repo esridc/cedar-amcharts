@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>AmCharts</title>
+
+  </head>
+  <body id="" onload="">
+    <!-- Styles -->
+    <style>
+    .chart {
+      width: 100%;
+      height: 300px;
+    }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/xy.js"></script>
+    <script src="https://www.amcharts.com/lib/3/radar.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="./cedar-amcharts.js"></script>
+
+<!-- Chart code -->
+<script>
+var url = "http://arcgis.ddot.dc.gov/arcgis/rest/services/Test/CrashData/MapServer/0"
+var config1 = {
+  "type": "bar",
+  "datasets": [ {
+    "url": url,
+    "query": {
+      "orderByFields": "Ward ASC",
+      "groupByFieldsForStatistics": "Ward",
+      "outStatistics": [
+        {
+          "statisticType": "count",
+          "onStatisticField": "Ward",
+          "outStatisticFieldName": "WARD_COUNT"
+        }
+      ]
+    },
+    "mappings": {
+      "category": {"field": "Ward", "label": "Ward"},
+      "series": [
+        {
+          "field": "WARD_COUNT",
+          "label": "Count"
+        }
+      ]
+    }
+  }]
+}
+
+showChart("chartdiv1", config1);
+
+var config2 = {
+  "type": "bar",
+  "datasets": [ {
+    "url": url,
+    "query": {
+      "orderByFields": "Ward ASC",
+      "groupByFieldsForStatistics": "Ward",
+      "outStatistics": [{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]
+    },
+    "mappings": {
+      "category": {"field": "Ward", "label": "Ward"},
+      "group": true,
+      "series": [
+        { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities" },
+        { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities" },
+        { "field": "FATAL_Driver", "label": "Driver Fatalities" }
+      ]
+    }
+  }]
+}
+
+showChart("chartdiv2", config2);
+
+var config3 = {
+  "type": "pie",
+  "url": url,
+  "query": {
+    "groupByFieldsForStatistics": "IntApproachDirection",
+    "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+  },
+  "mappings": {
+    "category": {"field": "IntApproachDirection", "label": "IntApproachDirection"},
+    "series": [
+      { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities" },
+      { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities" },
+      { "field": "FATAL_Driver", "label": "Driver Fatalities" }
+    ]
+  }
+}
+
+showChart("chartdiv3", config3);
+
+var config4 = {
+      "type": "bar",
+      "url": url,
+    "query": {
+        "orderByFields": "EXTRACT(MONTH from ReportDate)",
+        "groupByFieldsForStatistics": "EXTRACT(MONTH from ReportDate)",
+        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+    },
+    "mappings":{
+      "category": {"field": "Expr1", "label": "Month"},
+      "series": [
+        { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities"},
+        { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities"},
+        { "field": "FATAL_Driver", "label": "Driver Fatalities"}
+      ]
+  }
+}
+
+showChart("chartdiv4", config4);
+
+var config5 = {
+  "type": "bar",
+  "datasets": [
+    {
+      "url": url,
+      "query": {
+      "where": "OffIntersection < 1",
+      "outStatistics": "[{'statisticType':'COUNT','outStatisticFieldName': 'COUNT'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+      },
+    "mappings":{ "series": [ { "field": "COUNT", "label": "Intersection"} ] }
+  },
+  {
+    "url": url,
+    "query": {
+    "where": "OffIntersection >= 1",
+    "outStatistics": "[{'statisticType':'COUNT','outStatisticFieldName': 'COUNT'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+    },
+  "mappings":{ "series": [ { "field": "COUNT", "label": "Mid-Road"} ]}
+}
+]
+}
+
+showChart("chartdiv5", config5);
+
+var time_periods = ["Hour", "Day", "Month"];
+var chart_types = ["radar", "bar", "line"];
+for(var t=0; t<chart_types.length; t++) {
+  for(var p=0; p<time_periods.length; p++) {
+    var config1 = {
+      "type": chart_types[t],
+      "datasets": [ {
+      "url": url,
+      "query": {
+        "groupByFieldsForStatistics": "EXTRACT(" + time_periods[p] + " from REPORTDATE)",
+        "outStatistics": [{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}],
+        "sqlFormat": "standard"
+      },
+      "mappings": {
+        "category": {"field": "Expr1", "label": time_periods[p]},
+        "series": [
+          { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities" },
+          { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities" },
+          { "field": "FATAL_Driver", "label": "Driver Fatalities" }
+        ]
+      }
+    }]
+  };
+  showChart("chartdiv" + time_periods[p] + chart_types[t], config1);
+
+
+  }
+}
+</script>
+
+<!-- HTML -->
+<a href="./">&lt; Back Home</a>
+<h3>DC VisionZero</h3>
+<em>
+  whereby we illustrate a method for the graphing of multiple scatterplots of data utilizing two queries of a Geoservice and two series of a query.
+</em>
+<div id="chartdiv1" class="chart"></div>
+<div id="chartdiv2" class="chart"></div>
+<div id="chartdiv3" class="chart"></div>
+<div id="chartdiv4" class="chart"></div>
+<h3>Near Intesections?</h3>
+<div id="chartdiv5" class="chart"></div>
+<h2>Crashes by Hour of Day</h2>
+<div id="chartdivHourbar" class="chart"></div>
+<div id="chartdivHourradar" class="chart"></div>
+<div id="chartdivHourline" class="chart"></div>
+<h2>Crashes by Day of Year</h2>
+<div id="chartdivDaybar" class="chart"></div>
+<div id="chartdivDayradar" class="chart"></div>
+<div id="chartdivDayline" class="chart"></div>
+<h2>Crashes by Month</h2>
+<div id="chartdivMonthbar" class="chart"></div>
+<div id="chartdivMonthradar" class="chart"></div>
+<div id="chartdivMonthline" class="chart"></div>
+
+  </body>
+</html>
