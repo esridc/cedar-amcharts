@@ -23,11 +23,39 @@
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-    <script src="./cedar-amcharts.js"></script>
+    <script src="../dist/cedar.js"></script>
 
 <!-- Chart code -->
 <script>
-var url = "https://arcgis.ddot.dc.gov/arcgis/rest/services/Test/CrashData/MapServer/0"
+var url = "http://arcgis.ddot.dc.gov/arcgis/rest/services/Test/CrashData/MapServer/0"
+
+var configCollisions = {
+  "type": "area",
+  "datasets": [ {
+  "url": url,
+  "query": {
+    "groupByFieldsForStatistics": "EXTRACT(YEAR from ReportDate)",
+    "outStatistics": [
+      {
+        "statisticType": "sum",
+        "onStatisticField": "NumVehicles",
+        "outStatisticFieldName": "NumVehicles"
+      }
+    ],
+    "sqlFormat": "standard"
+  },
+  "mappings": {
+    "category": {"field": "Expr1", "label": "Year"},
+    "series": [
+      {
+        "field": "NumVehicles",
+        "label": "Number of Vehicles"
+      }
+    ]
+  }
+}]
+};
+cedar("chartdivCollisions", configCollisions);
 
 var config1 = {
   "type": "bar",
@@ -56,7 +84,7 @@ var config1 = {
   }]
 }
 
-showChart("chartdiv1", config1);
+cedar("chartdiv1", config1);
 
 var config2 = {
   "type": "bar",
@@ -79,7 +107,7 @@ var config2 = {
   }]
 }
 
-showChart("chartdiv2", config2);
+cedar("chartdiv2", config2);
 
 var config3 = {
   "type": "pie",
@@ -99,7 +127,7 @@ var config3 = {
   }
 }
 
-showChart("chartdiv3", config3);
+cedar("chartdiv3", config3);
 
 var config4 = {
       "type": "bar",
@@ -119,7 +147,7 @@ var config4 = {
   }
 }
 
-showChart("chartdiv4", config4);
+cedar("chartdiv4", config4);
 
 var config5 = {
   "type": "bar",
@@ -155,7 +183,7 @@ var config5 = {
 ]
 }
 
-showChart("chartdiv5", config5);
+cedar("chartdiv5", config5);
 
 var other = ["NumVehicles", "NumBikes", "NumPeds"]
 var outstats = [];
@@ -184,7 +212,7 @@ var config6 = {
 ]
 }
 
-showChart("chartdiv6", config6);
+cedar("chartdiv6", config6);
 
 var other = ["PedestriansImpaired", "BicyclistsImpaired", "DriversImpaired", "NumTaxis", "NumGovt", "Speeding"]
 var outstats = [];
@@ -213,7 +241,7 @@ var config7 = {
 ]
 }
 
-showChart("chartdiv7", config7);
+cedar("chartdiv7", config7);
 
 var time_periods = ["Hour", "Day", "Month"];
 var chart_types = ["radar", "bar", "line"];
@@ -238,7 +266,7 @@ for(var t=0; t<chart_types.length; t++) {
       }
     }]
   };
-  showChart("chartdiv" + time_periods[p] + chart_types[t], config1);
+  cedar("chartdiv" + time_periods[p] + chart_types[t], config1);
 
 
   }
