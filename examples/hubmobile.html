@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hub Mobile</title>
+<link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+<script src="https://js.arcgis.com/4.3/"></script>
+
+
+<style>
+  html, body, #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+
+
+  <script>
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/widgets/Search",
+    "esri/tasks/Locator",
+    "esri/symbols/PictureMarkerSymbol",
+    "dojo/domReady!"
+  ], function(Map, MapView, Search, Locator, PictureMarkerSymbol) {
+    var map = new Map({
+      basemap: "streets"
+    });
+
+    var view = new MapView({
+      container: "viewDiv",  // Reference to the DOM node that will contain the view
+      map: map               // References the map object created in step 3
+    });
+  // SMD: http://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Administrative_Other_Boundaries_WebMercator/MapServer/21
+    var searchWidget = new Search({
+        view: view,
+        sources: [
+          {
+            locator: new Locator("//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"),
+            withinViewEnabled: true,
+            singleLineFieldName: "SingleLine",
+            outFields: ["Addr_type"],
+            name: "Locator Name",
+            localSearchOptions: {
+              minScale: 300000,
+              distance: 50000
+            },
+            placeholder: "Placeholder Name",
+            resultSymbol: new PictureMarkerSymbol({
+               url: this.basePath + "/images/search-symbol-32.png",
+               size: 24,
+               width: 24,
+               height: 24,
+               xoffset: 0,
+               yoffset: 0
+           })
+          }
+        ]
+      });
+
+    // Add the search widget to the very top left corner of the view
+    view.ui.add(searchWidget, {
+      position: "top-right",
+      index: 0
+    });
+  });
+  </script>
+</body>
+</html>

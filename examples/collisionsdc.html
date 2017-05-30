@@ -17,16 +17,46 @@
     <!-- Resources -->
     <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/pie.js"></script>
     <script src="https://www.amcharts.com/lib/3/xy.js"></script>
     <script src="https://www.amcharts.com/lib/3/radar.js"></script>
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-    <script src="./cedar-amcharts.js"></script>
+    <script src="../dist/cedar.js"></script>
 
 <!-- Chart code -->
 <script>
-var url = "https://arcgis.ddot.dc.gov/arcgis/rest/services/Test/CrashData/MapServer/0"
+var url = "http://arcgis.ddot.dc.gov/arcgis/rest/services/Test/CrashData/MapServer/0"
+
+var configCollisions = {
+  "type": "area",
+  "datasets": [ {
+  "url": url,
+  "query": {
+    "groupByFieldsForStatistics": "EXTRACT(YEAR from ReportDate)",
+    "outStatistics": [
+      {
+        "statisticType": "sum",
+        "onStatisticField": "NumVehicles",
+        "outStatisticFieldName": "NumVehicles"
+      }
+    ],
+    "sqlFormat": "standard"
+  },
+  "mappings": {
+    "category": {"field": "Expr1", "label": "Year"},
+    "series": [
+      {
+        "field": "NumVehicles",
+        "label": "Number of Vehicles"
+      }
+    ]
+  }
+}]
+};
+cedar("chartdivCollisions", configCollisions);
+
 var config1 = {
   "type": "bar",
   "datasets": [ {
@@ -54,7 +84,7 @@ var config1 = {
   }]
 }
 
-showChart("chartdiv1", config1);
+cedar("chartdiv1", config1);
 
 var config2 = {
   "type": "bar",
@@ -77,12 +107,13 @@ var config2 = {
   }]
 }
 
-showChart("chartdiv2", config2);
+cedar("chartdiv2", config2);
 
 var config3 = {
   "type": "pie",
   "url": url,
   "query": {
+    "orderByFields": "IntApproachDirection",
     "groupByFieldsForStatistics": "IntApproachDirection",
     "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
   },
@@ -96,7 +127,7 @@ var config3 = {
   }
 }
 
-showChart("chartdiv3", config3);
+cedar("chartdiv3", config3);
 
 var config4 = {
       "type": "bar",
@@ -116,7 +147,7 @@ var config4 = {
   }
 }
 
-showChart("chartdiv4", config4);
+cedar("chartdiv4", config4);
 
 var config5 = {
   "type": "bar",
@@ -124,23 +155,93 @@ var config5 = {
     {
       "url": url,
       "query": {
-      "where": "OffIntersection < 1",
-      "outStatistics": "[{'statisticType':'COUNT','outStatisticFieldName': 'COUNT'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+        "where": "OffIntersection < 1",
+        "groupByFieldsForStatistics": "Ward",
+        "outStatistics": [
+          {'statisticType':'COUNT','onStatisticField': 'Ward','outStatisticFieldName': 'WARD_COUNT'}
+        ]
       },
-    "mappings":{ "series": [ { "field": "COUNT", "label": "Intersection"} ] }
+    "mappings":{
+      "category": {"field": "Ward", "label": "Ward"},
+      "group": true,
+      "series": [ { "field": "WARD_COUNT", "label": "Intersection"} ] }
   },
   {
     "url": url,
     "query": {
-    "where": "OffIntersection >= 1",
-    "outStatistics": "[{'statisticType':'COUNT','outStatisticFieldName': 'COUNT'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+      "where": "OffIntersection >= 1",
+      "groupByFieldsForStatistics": "Ward",
+      "outStatistics": [
+        {'statisticType':'COUNT','onStatisticField': 'Ward','outStatisticFieldName': 'WARD_COUNT'}
+      ]
     },
-  "mappings":{ "series": [ { "field": "COUNT", "label": "Mid-Road"} ]}
+  "mappings":{
+    "category": {"field": "Ward", "label": "Ward"},
+    "group": true,
+    "series": [ { "field": "WARD_COUNT", "label": "Non-Intersection"} ]}
 }
 ]
 }
 
-showChart("chartdiv5", config5);
+cedar("chartdiv5", config5);
+
+var other = ["NumVehicles", "NumBikes", "NumPeds"]
+var outstats = [];
+var series = [];
+
+for(var o=0; o<other.length; o++) {
+  outstats.push({'statisticType':'sum','onStatisticField': other[o],'outStatisticFieldName': other[o]})
+  series.push({ "field": other[o], "label": other[o]})
+}
+
+
+var config6 = {
+  "type": "bar",
+  "datasets": [
+    {
+      "url": url,
+      "query": {
+        "groupByFieldsForStatistics": "Ward",
+        "outStatistics": outstats
+      },
+    "mappings":{
+      "category": {"field": "Ward", "label": "Ward"},
+      "group": true,
+      "series": series }
+  }
+]
+}
+
+cedar("chartdiv6", config6);
+
+var other = ["PedestriansImpaired", "BicyclistsImpaired", "DriversImpaired", "NumTaxis", "NumGovt", "Speeding"]
+var outstats = [];
+var series = [];
+
+for(var o=0; o<other.length; o++) {
+  outstats.push({'statisticType':'sum','onStatisticField': other[o],'outStatisticFieldName': other[o]})
+  series.push({ "field": other[o], "label": other[o]})
+}
+
+
+var config7 = {
+  "type": "bar",
+  "datasets": [
+    {
+      "url": url,
+      "query": {
+        "groupByFieldsForStatistics": "Ward",
+        "outStatistics": outstats
+      },
+    "mappings":{
+      "category": {"field": "Ward", "label": "Ward"},
+      "group": true,
+      "series": series }
+  }
+]
+}
+
+cedar("chartdiv7", config7);
 
 var time_periods = ["Hour", "Day", "Month"];
 var chart_types = ["radar", "bar", "line"];
@@ -165,7 +266,7 @@ for(var t=0; t<chart_types.length; t++) {
       }
     }]
   };
-  showChart("chartdiv" + time_periods[p] + chart_types[t], config1);
+  cedar("chartdiv" + time_periods[p] + chart_types[t], config1);
 
 
   }
@@ -178,12 +279,18 @@ for(var t=0; t<chart_types.length; t++) {
 <em>
   whereby we illustrate a method for the graphing of multiple scatterplots of data utilizing two queries of a Geoservice and two series of a query.
 </em>
+<div id="chartdivCollisions" class="chart"></div>
+<div id="chartdivArea" class="chart"></div>
+
 <div id="chartdiv1" class="chart"></div>
 <div id="chartdiv2" class="chart"></div>
 <div id="chartdiv3" class="chart"></div>
 <div id="chartdiv4" class="chart"></div>
 <h3>Near Intesections?</h3>
+<em>Measured within 1 meter</em>
 <div id="chartdiv5" class="chart"></div>
+<h3>Other comparisons</h3>
+<div id="chartdiv6" class="chart"></div>
 <h2>Crashes by Hour of Day</h2>
 <div id="chartdivHourbar" class="chart"></div>
 <div id="chartdivHourradar" class="chart"></div>

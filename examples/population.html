@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>AmCharts</title>
+
+  </head>
+  <body id="" onload="">
+    <!-- Styles -->
+    <style>
+    .chart {
+      width: 100%;
+      height: 300px;
+    }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/bar.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="../dist/cedar.js"></script>
+
+<!-- Chart code -->
+<script>
+    var config1 = {
+      "type": "scatter",
+      "url": "https://demographics6.arcgis.com/arcgis/rest/services/USA_Age_by_Gender_by_Race_2016/MapServer/47",
+          "query": {
+            "where": "id='20002'",
+            "outFields": "POP0C10,POP5C10,POP10C10,POP15C10,POP20C10,POP25C10,POP30C10,POP35C10,POP40C10,POP45C10,POP50C10,POP55C10,POP60C10,POP65C10,POP70C10,POP75C10,POP80C10,POP85C10"
+          },
+    "mappings":{
+      "category": {"field": "Type", "label": "Type"},
+      "series": [
+        { "value": {"field": "Number_of_SUM"}, "label": "Number of Students"}
+      ]
+  }
+}
+
+
+cedar("chartdiv1", config1);
+
+</script>
+
+<!-- HTML -->
+<a href="/">&lt; Back Home</a>
+<div id="chartdiv1" class="chart"></div>
+
+  </body>
+</html>

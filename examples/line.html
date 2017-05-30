@@ -20,7 +20,7 @@
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-    <script src="./cedar-amcharts.js"></script>
+    <script src="../dist/cedar.js"></script>
 
 <!-- Chart code -->
 <script>
@@ -79,10 +79,10 @@ var config1 = {
   }
 }
 };
-showChart("chartdivLine", config1);
+cedar("chartdivLine", config1);
 config2 = clone(config1);
 config2.type = "area";
-showChart("chartdivArea", config2);
+cedar("chartdivArea", config2);
 
 </script>
 
@@ -128,7 +128,7 @@ showChart("chartdivArea", config2);
       }
     }]
     };
-    showChart("chartdiv1", config1);
+    cedar("chartdiv1", config1);
   </code>
 </pre>
   </body>
