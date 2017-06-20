@@ -34,18 +34,18 @@ var config1 = {
   "datasets": [ {
     "url": url,
     "query": {
-      "orderByFields": "Ward ASC",
-      "groupByFieldsForStatistics": "Ward",
+      "orderByFields": "WARD ASC",
+      "groupByFieldsForStatistics": "WARD",
       "outStatistics": [
         {
           "statisticType": "count",
-          "onStatisticField": "Ward",
+          "onStatisticField": "WARD",
           "outStatisticFieldName": "WARD_COUNT"
         }
       ]
     },
     "mappings": {
-      "category": {"field": "Ward", "label": "Ward"},
+      "category": {"field": "WARD", "label": "WARD"},
       "series": [
         {
           "field": "WARD_COUNT",
@@ -63,17 +63,17 @@ var config2 = {
   "datasets": [ {
     "url": url,
     "query": {
-      "orderByFields": "Ward ASC",
-      "groupByFieldsForStatistics": "Ward",
-      "outStatistics": [{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]
+      "orderByFields": "WARD ASC",
+      "groupByFieldsForStatistics": "WARD",
+      "outStatistics": [{'statisticType':'sum','onStatisticField': 'FATAL_DRIVER','outStatisticFieldName': 'FATAL_DRIVER'},{'statisticType':'sum','onStatisticField': 'FATAL_BICYCLIST','outStatisticFieldName': 'FATAL_BICYCLIST'},{'statisticType':'sum','onStatisticField': 'FATAL_PEDESTRIAN','outStatisticFieldName': 'FATAL_PEDESTRIAN'}]
     },
     "mappings": {
-      "category": {"field": "Ward", "label": "Ward"},
+      "category": {"field": "WARD", "label": "WARD"},
       "group": true,
       "series": [
-        { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities" },
-        { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities" },
-        { "field": "FATAL_Driver", "label": "Driver Fatalities" }
+        { "field": "FATAL_PEDESTRIAN", "label": "Pedestrian Fatalities" },
+        { "field": "FATAL_BICYCLIST", "label": "Bicyclist Fatalities" },
+        { "field": "FATAL_DRIVER", "label": "Driver Fatalities" }
       ]
     }
   }]
@@ -85,16 +85,16 @@ var config3 = {
   "type": "pie",
   "url": url,
   "query": {
-    "orderByFields": "IntApproachDirection",
-    "groupByFieldsForStatistics": "IntApproachDirection",
-    "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+    "orderByFields": "INTAPPROACHDIRECTION",
+    "groupByFieldsForStatistics": "INTAPPROACHDIRECTION",
+    "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_DRIVER','outStatisticFieldName': 'FATAL_DRIVER'},{'statisticType':'sum','onStatisticField': 'FATAL_BICYCLIST','outStatisticFieldName': 'FATAL_BICYCLIST'},{'statisticType':'sum','onStatisticField': 'FATAL_PEDESTRIAN','outStatisticFieldName': 'FATAL_PEDESTRIAN'}]"
   },
   "mappings": {
-    "category": {"field": "IntApproachDirection", "label": "IntApproachDirection"},
+    "category": {"field": "INTAPPROACHDIRECTION", "label": "INTAPPROACHDIRECTION"},
     "series": [
-      { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities" },
-      { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities" },
-      { "field": "FATAL_Driver", "label": "Driver Fatalities" }
+      { "field": "FATAL_PEDESTRIAN", "label": "Pedestrian Fatalities" },
+      { "field": "FATAL_BICYCLIST", "label": "Bicyclist Fatalities" },
+      { "field": "FATAL_DRIVER", "label": "Driver Fatalities" }
     ]
   }
 }
@@ -105,16 +105,16 @@ var config4 = {
       "type": "bar",
       "url": url,
     "query": {
-        "orderByFields": "EXTRACT(MONTH from ReportDate)",
-        "groupByFieldsForStatistics": "EXTRACT(MONTH from ReportDate)",
-        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}]"
+        "orderByFields": "EXTRACT(MONTH from REPORTDATE)",
+        "groupByFieldsForStatistics": "EXTRACT(MONTH from REPORTDATE)",
+        "outStatistics": "[{'statisticType':'sum','onStatisticField': 'FATAL_DRIVER','outStatisticFieldName': 'FATAL_DRIVER'},{'statisticType':'sum','onStatisticField': 'FATAL_BICYCLIST','outStatisticFieldName': 'FATAL_BICYCLIST'},{'statisticType':'sum','onStatisticField': 'FATAL_PEDESTRIAN','outStatisticFieldName': 'FATAL_PEDESTRIAN'}]"
     },
     "mappings":{
       "category": {"field": "Expr1", "label": "Month"},
       "series": [
-        { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities"},
-        { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities"},
-        { "field": "FATAL_Driver", "label": "Driver Fatalities"}
+        { "field": "FATAL_PEDESTRIAN", "label": "Pedestrian Fatalities"},
+        { "field": "FATAL_BICYCLIST", "label": "Bicyclist Fatalities"},
+        { "field": "FATAL_DRIVER", "label": "Driver Fatalities"}
       ]
   }
 }
@@ -127,28 +127,28 @@ var config5 = {
     {
       "url": url,
       "query": {
-        "where": "OffIntersection < 1",
-        "groupByFieldsForStatistics": "Ward",
+        "where": "OFFINTERSECTION < 1",
+        "groupByFieldsForStatistics": "WARD",
         "outStatistics": [
-          {'statisticType':'COUNT','onStatisticField': 'Ward','outStatisticFieldName': 'WARD_COUNT'}
+          {'statisticType':'COUNT','onStatisticField': 'WARD','outStatisticFieldName': 'WARD_COUNT'}
         ]
       },
     "mappings":{
-      "category": {"field": "Ward", "label": "Ward"},
+      "category": {"field": "WARD", "label": "WARD"},
       "group": true,
       "series": [ { "field": "WARD_COUNT", "label": "Intersection"} ] }
   },
   {
     "url": url,
     "query": {
-      "where": "OffIntersection >= 1",
-      "groupByFieldsForStatistics": "Ward",
+      "where": "OFFINTERSECTION >= 1",
+      "groupByFieldsForStatistics": "WARD",
       "outStatistics": [
-        {'statisticType':'COUNT','onStatisticField': 'Ward','outStatisticFieldName': 'WARD_COUNT'}
+        {'statisticType':'COUNT','onStatisticField': 'WARD','outStatisticFieldName': 'WARD_COUNT'}
       ]
     },
   "mappings":{
-    "category": {"field": "Ward", "label": "Ward"},
+    "category": {"field": "WARD", "label": "WARD"},
     "group": true,
     "series": [ { "field": "WARD_COUNT", "label": "Non-Intersection"} ]}
 }
@@ -157,7 +157,7 @@ var config5 = {
 
 showChart("chartdiv5", config5);
 
-var other = ["NumVehicles", "NumBikes", "NumPeds"]
+var other = ["TOTAL_VEHICLES", "TOTAL_BICYCLES", "TOTAL_PEDESTRIANS"]
 var outstats = [];
 var series = [];
 
@@ -173,11 +173,11 @@ var config6 = {
     {
       "url": url,
       "query": {
-        "groupByFieldsForStatistics": "Ward",
+        "groupByFieldsForStatistics": "WARD",
         "outStatistics": outstats
       },
     "mappings":{
-      "category": {"field": "Ward", "label": "Ward"},
+      "category": {"field": "WARD", "label": "WARD"},
       "group": true,
       "series": series }
   }
@@ -186,7 +186,7 @@ var config6 = {
 
 showChart("chartdiv6", config6);
 
-var other = ["PedestriansImpaired", "BicyclistsImpaired", "DriversImpaired", "NumTaxis", "NumGovt", "Speeding"]
+var other = ["PEDESTRIANSIMPAIRED", "BICYCLISTSIMPAIRED", "DRIVERSIMPAIRED", "TOTAL_TAXIS", "TOTAL_GOVERNMENT", "SPEEDING_INVOLVED"]
 var outstats = [];
 var series = [];
 
@@ -202,11 +202,11 @@ var config7 = {
     {
       "url": url,
       "query": {
-        "groupByFieldsForStatistics": "Ward",
+        "groupByFieldsForStatistics": "WARD",
         "outStatistics": outstats
       },
     "mappings":{
-      "category": {"field": "Ward", "label": "Ward"},
+      "category": {"field": "WARD", "label": "WARD"},
       "group": true,
       "series": series }
   }
@@ -225,15 +225,15 @@ for(var t=0; t<chart_types.length; t++) {
       "url": url,
       "query": {
         "groupByFieldsForStatistics": "EXTRACT(" + time_periods[p] + " from REPORTDATE)",
-        "outStatistics": [{'statisticType':'sum','onStatisticField': 'FATAL_Driver','outStatisticFieldName': 'FATAL_Driver'},{'statisticType':'sum','onStatisticField': 'FATAL_Bicyclist','outStatisticFieldName': 'FATAL_Bicyclist'},{'statisticType':'sum','onStatisticField': 'FATAL_Pedestrian','outStatisticFieldName': 'FATAL_Pedestrian'}],
+        "outStatistics": [{'statisticType':'sum','onStatisticField': 'FATAL_DRIVER','outStatisticFieldName': 'FATAL_DRIVER'},{'statisticType':'sum','onStatisticField': 'FATAL_BICYCLIST','outStatisticFieldName': 'FATAL_BICYCLIST'},{'statisticType':'sum','onStatisticField': 'FATAL_PEDESTRIAN','outStatisticFieldName': 'FATAL_PEDESTRIAN'}],
         "sqlFormat": "standard"
       },
       "mappings": {
         "category": {"field": "Expr1", "label": time_periods[p]},
         "series": [
-          { "field": "FATAL_Pedestrian", "label": "Pedestrian Fatalities" },
-          { "field": "FATAL_Bicyclist", "label": "Bicyclist Fatalities" },
-          { "field": "FATAL_Driver", "label": "Driver Fatalities" }
+          { "field": "FATAL_PEDESTRIAN", "label": "Pedestrian Fatalities" },
+          { "field": "FATAL_BICYCLIST", "label": "Bicyclist Fatalities" },
+          { "field": "FATAL_DRIVER", "label": "Driver Fatalities" }
         ]
       }
     }]
