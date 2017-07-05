@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>AmCharts</title>
+
+  </head>
+  <body id="" onload="">
+    <!-- Styles -->
+    <style>
+    .chart {
+      width: 100%;
+      height: 300px;
+    }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/pie.js"></script>
+    <script src="https://www.amcharts.com/lib/3/radar.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="./cedar-amcharts.js"></script>
+
+<!-- Chart code -->
+<script>
+
+var datasets = [{
+  "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+  "query": {
+    "orderByFields": "Number_of_SUM DESC",
+    "groupByFieldsForStatistics": "Type",
+    "outStatistics": [
+      {
+        "statisticType": "sum",
+        "onStatisticField": "Number_of",
+        "outStatisticFieldName": "Number_of_SUM"
+      }
+    ]
+  },
+  "mappings": {
+    "category": {"field": "Type"},
+    "series": [
+      {
+        "value": {"field": "Number_of_SUM"},
+        "label": "Number of Students"
+      }
+    ]
+  }
+}]
+
+//,
+var types = [ "bar","line","pie","radar"];
+for(var i=0; i<types.length; i++) {
+  showChart("chartdiv" + types[i], {type: types[i], datasets: datasets});
+}
+
+</script>
+
+<!-- HTML -->
+<a href="./">&lt; Back Home</a>
+<h3>Simple Variations</h3>
+<em>
+  whereby we create multiple charts using the same dataset. 
+</em>
+<div id="chartdivbar" class="chart"></div>
+<div id="chartdivline" class="chart"></div>
+<div id="chartdivpie" class="chart"></div>
+<div id="chartdivradar" class="chart"></div>
+
+<pre>
+  <code>
+    var datasets = [{
+      "url": "https://services.arcgis.com/uDTUpUPbk8X8mXwl/arcgis/rest/services/Public_Schools_in_Onondaga_County/FeatureServer/0",
+      "query": {
+        "orderByFields": "Number_of_SUM DESC",
+        "groupByFieldsForStatistics": "Type",
+        "outStatistics": [
+          {
+            "statisticType": "sum",
+            "onStatisticField": "Number_of",
+            "outStatisticFieldName": "Number_of_SUM"
+          }
+        ]
+      },
+      "mappings": {
+        "category": {"field": "Type"},
+        "series": [
+          {
+            "value": {"field": "Number_of_SUM"},
+            "label": "Number of Students"
+          }
+        ]
+      }
+    }]
+
+    //,
+    var types = [ "bar","line","pie","radar"];
+    for(var i=0; i<types.length; i++) {
+      showChart("chartdiv" + types[i], {type: types[i], datasets: datasets});
+    }
+  </code>
+</pre>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>AmCharts</title>
+
+  </head>
+  <body id="" onload="">
+    <!-- Styles -->
+    <style>
+    .chart {
+      width: 100%;
+      height: 400px;
+    }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="./cedar-amcharts.js"></script>
+
+<!-- Chart code -->
+<script>
+var config1 = {
+  "type": "bar",
+  "datasets": [{
+    "data": {
+      "features": [
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20005,
+            "TOTAL_STUD_SUM": 327
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.3, "ZIP_CODE": 20024,
+            "TOTAL_STUD_SUM": 517
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.4, "ZIP_CODE": 20017,
+            "TOTAL_STUD_SUM": 597
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.5, "ZIP_CODE": 20015,
+            "TOTAL_STUD_SUM": 707
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20037,
+            "TOTAL_STUD_SUM": 760
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20018,
+            "TOTAL_STUD_SUM": 1052
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20012,
+            "TOTAL_STUD_SUM": 1184
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20007,
+            "TOTAL_STUD_SUM": 1584
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20008,
+            "TOTAL_STUD_SUM": 1625
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20003,
+            "TOTAL_STUD_SUM": 1869
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20009,
+            "TOTAL_STUD_SUM": 1945
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20001,
+            "TOTAL_STUD_SUM": 2164
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20010,
+            "TOTAL_STUD_SUM": 2282
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20019,
+            "TOTAL_STUD_SUM": 3278
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20011,
+            "TOTAL_STUD_SUM": 3817
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20020,
+            "TOTAL_STUD_SUM": 3901
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20032,
+            "TOTAL_STUD_SUM": 4360
+          }
+        },
+        {
+          "attributes": {
+            "opacity": 0.2, "ZIP_CODE": 20016,
+            "TOTAL_STUD_SUM": 4681
+          }
+        },
+        {
+          "attributes": {
+            "color": "#0F0",
+            "opacity": 0.9,
+            "ZIP_CODE": 20002,
+            "TOTAL_STUD_SUM": 5590
+          }
+        }
+      ]
+    },
+    "mappings": {
+      "category": {
+        "field": "ZIP_CODE",
+        "label": "Zip Code"
+      },
+      "series": [
+        {
+          "alpha": {"field": "opacity"},
+          "fillColors": {"field": "color", "value": "#F00"},
+          "value": {"field": "TOTAL_STUD_SUM"},
+          "label": "Number of Students"
+        }
+      ]
+    }
+  }]
+
+}
+showChart("chartdiv1", config1);
+
+</script>
+
+<!-- HTML -->
+<a href="./">&lt; Back Home</a>
+<div id="chartdiv1" class="chart"></div>
+
+  </body>
+</html>
